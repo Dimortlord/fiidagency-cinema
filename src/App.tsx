@@ -176,42 +176,35 @@ const bonuses = [
     title: "Вертикальная нарезка",
     text: "Для сторис и рилсов — уже в правильном формате.",
     Icon: Smartphone,
-    media: "video",
-    src: "/video/services/wedding.mp4",
-    poster: "/img/services/wedding.webp",
-    position: "48% center",
+    src: "/img/bonuses/vertical-cut.jpg",
+    position: "44% center",
   },
   {
     title: "Кадр-постер",
     text: "В печатном качестве: можно поставить в рамку и повесить на стену.",
     Icon: ImageIcon,
-    media: "image",
-    src: "/img/services/engagement.webp",
-    position: "center 42%",
+    src: "/img/bonuses/poster-frame.jpg",
+    position: "center",
   },
   {
     title: "QR-открытка",
     text: "Гость сканирует код и смотрит фильм с телефона.",
     Icon: QrCode,
-    media: "image",
-    src: "/img/services/birthday.webp",
-    position: "center",
+    src: "/img/bonuses/qr-card.jpg",
+    position: "42% center",
   },
   {
     title: "Версия для большого экрана",
     text: "Собрана специально для показа в зале.",
     Icon: MonitorPlay,
-    media: "video",
-    src: "/video/services/parents.mp4",
-    poster: "/img/services/parents.webp",
+    src: "/img/bonuses/big-screen.jpg",
     position: "center",
   },
   {
     title: "Ваш файл навсегда",
     text: "Без водяных знаков и ограничений на количество просмотров.",
     Icon: TicketCheck,
-    media: "image",
-    src: "/img/services/company.webp",
+    src: "/img/bonuses/file-forever.jpg",
     position: "center",
   },
 ] as const;
@@ -672,7 +665,6 @@ function Process({ processRef, trackRef }: {
 }
 
 function Bonuses() {
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   return (
     <section id="bonuses" className="bonuses paper-section" aria-labelledby="bonuses-title">
       <div className="container">
@@ -683,22 +675,8 @@ function Bonuses() {
         <div className="bonus-grid">
           {bonuses.map((bonus, index) => (
             <article className={`bonus-card bonus-visual-${index + 1}`} key={bonus.title} data-reveal>
-              <div className={`bonus-media is-${bonus.media}`} aria-hidden="true">
-                {bonus.media === "video" ? (
-                  <video
-                    src={assetUrl(bonus.src)}
-                    poster={assetUrl(bonus.poster)}
-                    autoPlay={!reduceMotion}
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    style={{ objectPosition: bonus.position }}
-                    tabIndex={-1}
-                  />
-                ) : (
-                  <img src={assetUrl(bonus.src)} alt="" loading="lazy" style={{ objectPosition: bonus.position }} />
-                )}
+              <div className="bonus-media is-image" aria-hidden="true">
+                <img src={assetUrl(bonus.src)} alt="" loading="lazy" style={{ objectPosition: bonus.position }} />
               </div>
               <div className="bonus-overlay" aria-hidden="true" />
               <div className="bonus-content">
