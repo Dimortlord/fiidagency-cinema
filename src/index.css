@@ -879,22 +879,22 @@ h3 {
 .beam {
   position: absolute;
   z-index: 1;
-  top: 355px;
-  left: 118px;
-  width: min(47vw, 700px);
-  height: 270px;
-  background: linear-gradient(90deg, rgba(255, 176, 58, 0.13), rgba(255, 214, 151, 0.2), rgba(255, 247, 236, 0.025));
-  clip-path: polygon(0 45%, 100% 0, 100% 100%, 0 56%);
-  filter: blur(9px);
-  opacity: 0.68;
+  top: 318px;
+  left: 116px;
+  width: min(50vw, 760px);
+  height: 360px;
+  background: linear-gradient(90deg, rgba(255, 176, 58, 0.16), rgba(255, 214, 151, 0.23), rgba(255, 247, 236, 0.035));
+  clip-path: polygon(0 46%, 100% 0, 100% 100%, 0 55%);
+  filter: blur(11px);
+  opacity: 0.76;
   transform: rotate(-13deg);
   transform-origin: left center;
 }
 
 .beam::after {
   position: absolute;
-  inset: 38% 0;
-  background: linear-gradient(90deg, rgba(255, 176, 58, 0.2), rgba(255, 247, 236, 0.06), transparent);
+  inset: 36% 0;
+  background: linear-gradient(90deg, rgba(255, 176, 58, 0.25), rgba(255, 247, 236, 0.08), transparent);
   content: "";
   filter: blur(4px);
 }
