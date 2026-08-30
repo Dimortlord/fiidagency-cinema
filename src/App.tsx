@@ -722,11 +722,11 @@ function Works({ showcaseRef, videoRef }: {
           <h2 id="works-title">{t("Вот как выглядит ваша премьера")}</h2>
         </div>
         <div className="showcase-screen">
-          <video ref={videoRef} muted loop playsInline preload="none" poster={assetUrl("/img/frames/08.webp")} aria-label={t("Фрагмент фильма о предложении руки и сердца")}>
-            <source src={`${assetUrl("/video/showcase.mp4")}?v=2`} type="video/mp4" />
+          <video ref={videoRef} muted loop playsInline preload="none" poster={assetUrl("/img/frames/01.webp")} aria-label={t("Нарезка фильма через эпохи")}>
+            <source src={`${assetUrl("/video/epochs-montage.mp4")}?v=1`} type="video/mp4" />
           </video>
           <div className="showcase-vignette" />
-          <div className="showcase-status"><span /> {t("Фрагмент фильма · 00:24")}</div>
+          <div className="showcase-status"><span /> {t("Семь эпох · 00:16")}</div>
         </div>
         <div className="thesis-layer">
           {theses.map(([title, text], index) => (
