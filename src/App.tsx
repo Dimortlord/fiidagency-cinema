@@ -369,17 +369,44 @@ function Filmstrip() {
   ], []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible?.target.id) setActive(visible.target.id);
-    }, { rootMargin: "-20% 0px -55%", threshold: [0, 0.2, 0.5] });
-    sections.forEach((id) => {
-      const node = document.getElementById(id);
-      if (node) observer.observe(node);
-    });
-    return () => observer.disconnect();
+    let frame = 0;
+    const updateActiveFrame = () => {
+      frame = 0;
+      const markerY = window.innerHeight * 0.42;
+      let nextActive = sections[0];
+      let nearestDistance = Number.POSITIVE_INFINITY;
+
+      sections.forEach((id) => {
+        const node = document.getElementById(id);
+        if (!node) return;
+        const rect = node.getBoundingClientRect();
+        if (rect.top <= markerY && rect.bottom > markerY) {
+          nextActive = id;
+          nearestDistance = -1;
+          return;
+        }
+        if (nearestDistance < 0) return;
+        const distance = rect.top > markerY ? rect.top - markerY : markerY - rect.bottom;
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nextActive = id;
+        }
+      });
+
+      setActive((current) => current === nextActive ? current : nextActive);
+    };
+    const requestUpdate = () => {
+      if (!frame) frame = requestAnimationFrame(updateActiveFrame);
+    };
+
+    updateActiveFrame();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+    };
   }, [sections]);
 
   return (
