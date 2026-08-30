@@ -879,28 +879,36 @@ h3 {
 .beam {
   position: absolute;
   z-index: 1;
-  top: 360px;
-  left: 85px;
-  width: min(48vw, 720px);
-  height: 300px;
-  background: linear-gradient(90deg, rgba(255, 176, 58, 0.08), rgba(255, 176, 58, 0.24), rgba(255, 247, 236, 0.04));
+  top: 355px;
+  left: 118px;
+  width: min(47vw, 700px);
+  height: 270px;
+  background: linear-gradient(90deg, rgba(255, 176, 58, 0.13), rgba(255, 214, 151, 0.2), rgba(255, 247, 236, 0.025));
   clip-path: polygon(0 45%, 100% 0, 100% 100%, 0 56%);
-  filter: blur(7px);
-  opacity: 0.8;
+  filter: blur(9px);
+  opacity: 0.68;
   transform: rotate(-13deg);
   transform-origin: left center;
+}
+
+.beam::after {
+  position: absolute;
+  inset: 38% 0;
+  background: linear-gradient(90deg, rgba(255, 176, 58, 0.2), rgba(255, 247, 236, 0.06), transparent);
+  content: "";
+  filter: blur(4px);
 }
 
 .projector {
   position: absolute;
   z-index: 5;
   right: auto;
-  bottom: 54px;
-  left: -95px;
+  bottom: 36px;
+  left: -42px;
   width: 230px;
   height: 205px;
-  filter: drop-shadow(0 24px 24px rgba(27, 16, 51, 0.7));
-  transform: scale(0.82);
+  filter: drop-shadow(0 25px 25px rgba(5, 2, 15, 0.72)) drop-shadow(0 0 28px rgba(255, 176, 58, 0.08));
+  transform: scale(0.68);
   transform-origin: bottom left;
 }
 
@@ -910,18 +918,45 @@ h3 {
   bottom: 34px;
   width: 176px;
   height: 100px;
-  border: 1px solid rgba(255, 247, 236, 0.34);
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(255, 247, 236, 0.18), rgba(255, 247, 236, 0.05));
-  box-shadow: inset 0 0 22px rgba(255, 247, 236, 0.05);
-  backdrop-filter: blur(8px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 247, 236, 0.42);
+  border-radius: 17px 13px 15px 18px;
+  background:
+    linear-gradient(110deg, transparent 0 42%, rgba(255, 247, 236, 0.13) 49%, transparent 56%),
+    linear-gradient(145deg, #81798d 0%, #51485f 24%, #31283e 57%, #171225 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 247, 236, 0.32),
+    inset 0 -12px 24px rgba(8, 3, 18, 0.38),
+    0 12px 26px rgba(8, 3, 18, 0.34);
+}
+
+.projector-body::before {
+  position: absolute;
+  inset: 8px 10px auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 247, 236, 0.48), transparent);
+  content: "";
+}
+
+.projector-body::after {
+  position: absolute;
+  right: 68px;
+  bottom: 16px;
+  width: 42px;
+  height: 24px;
+  border: 1px solid rgba(255, 247, 236, 0.16);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(8, 3, 18, 0.18), rgba(8, 3, 18, 0.44));
+  box-shadow: inset 0 5px 8px rgba(8, 3, 18, 0.3);
+  content: "";
 }
 
 .projector-body span {
   position: absolute;
   right: 22px;
   bottom: 12px;
-  color: rgba(255, 247, 236, 0.5);
+  z-index: 2;
+  color: rgba(255, 247, 236, 0.72);
   font-family: "Unbounded", sans-serif;
   font-size: 0.62rem;
 }
@@ -933,20 +968,63 @@ h3 {
   width: 36px;
   height: 5px;
   border-radius: 99px;
-  background: repeating-linear-gradient(90deg, var(--paper) 0 3px, transparent 3px 7px);
-  opacity: 0.28;
+  background: repeating-linear-gradient(90deg, rgba(255, 247, 236, 0.68) 0 3px, transparent 3px 7px);
+  opacity: 0.42;
+}
+
+.projector-knob {
+  position: absolute;
+  z-index: 2;
+  top: 19px;
+  left: 21px;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255, 247, 236, 0.32);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e6d9c5, #6c6277 42%, #201829 72%);
+  box-shadow: 0 2px 5px rgba(8, 3, 18, 0.5);
 }
 
 .projector-lens {
   position: absolute;
-  right: -14px;
-  bottom: 64px;
-  width: 50px;
-  height: 50px;
-  border: 8px solid rgba(255, 247, 236, 0.14);
+  right: -17px;
+  bottom: 62px;
+  width: 56px;
+  height: 56px;
+  border: 7px solid #5c5268;
   border-radius: 50%;
-  background: var(--amber);
-  box-shadow: 0 0 22px var(--amber), inset 0 0 9px var(--paper);
+  background: radial-gradient(circle at 38% 35%, #fff7ec 0 7%, #ffd07b 18%, #ffad32 45%, #b74818 72%, #271528 100%);
+  box-shadow:
+    0 0 14px rgba(255, 176, 58, 0.92),
+    0 0 38px rgba(255, 176, 58, 0.48),
+    inset 0 0 10px rgba(255, 247, 236, 0.8),
+    inset 0 0 0 3px rgba(27, 16, 51, 0.36);
+  animation: lens-breathe 4.8s ease-in-out infinite;
+}
+
+.projector-lens::before {
+  position: absolute;
+  inset: -11px;
+  border: 2px solid rgba(255, 247, 236, 0.26);
+  border-radius: 50%;
+  content: "";
+}
+
+.projector-lens i {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  width: 14px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.78);
+  filter: blur(1px);
+  transform: rotate(-28deg);
+}
+
+@keyframes lens-breathe {
+  0%, 100% { filter: brightness(0.94); }
+  50% { filter: brightness(1.12); }
 }
 
 .projector-reel {
@@ -955,14 +1033,30 @@ h3 {
   top: 17px;
   width: 96px;
   height: 96px;
-  border: 7px solid rgba(255, 247, 236, 0.17);
+  border: 5px solid #62596e;
   border-radius: 50%;
-  background: rgba(27, 16, 51, 0.78);
-  animation: reel-spin 10s linear infinite;
+  background:
+    radial-gradient(circle, #a49aa9 0 6%, #30273d 7% 14%, transparent 15%),
+    radial-gradient(circle at 38% 30%, #71677d, #2f273d 58%, #161122 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 247, 236, 0.34),
+    inset 0 -8px 14px rgba(8, 3, 18, 0.42),
+    0 8px 18px rgba(8, 3, 18, 0.38);
+  animation: reel-spin 20s linear infinite;
 }
 
 .reel-one { left: 22px; }
-.reel-two { right: 18px; animation-duration: 12s; animation-direction: reverse; }
+.reel-two { right: 18px; animation-duration: 24s; animation-direction: reverse; }
+
+.projector-reel::after {
+  position: absolute;
+  inset: 41%;
+  border: 1px solid rgba(255, 247, 236, 0.45);
+  border-radius: 50%;
+  background: #1c1628;
+  box-shadow: 0 0 0 4px rgba(255, 247, 236, 0.08);
+  content: "";
+}
 
 .projector-reel i {
   position: absolute;
@@ -971,7 +1065,8 @@ h3 {
   width: 17px;
   height: 33px;
   border-radius: 50%;
-  background: rgba(255, 247, 236, 0.16);
+  background: linear-gradient(180deg, rgba(8, 3, 18, 0.72), rgba(27, 16, 51, 0.88));
+  box-shadow: inset 1px 0 rgba(255, 247, 236, 0.1);
   transform-origin: 0 0;
 }
 
@@ -981,13 +1076,28 @@ h3 {
 
 @keyframes reel-spin { to { transform: rotate(360deg); } }
 
+.projector-base {
+  position: absolute;
+  z-index: -1;
+  right: 22px;
+  bottom: 27px;
+  width: 148px;
+  height: 15px;
+  border: 1px solid rgba(255, 247, 236, 0.24);
+  border-radius: 3px 3px 7px 7px;
+  background: linear-gradient(180deg, #5b5267, #201a2c);
+  box-shadow: 0 7px 13px rgba(8, 3, 18, 0.38);
+}
+
 .projector-foot {
   position: absolute;
   bottom: 11px;
   width: 14px;
   height: 30px;
   border-radius: 2px;
-  background: rgba(255, 247, 236, 0.25);
+  border: 1px solid rgba(255, 247, 236, 0.18);
+  background: linear-gradient(90deg, #272030, #6b6274 48%, #241d2e);
+  box-shadow: 0 5px 8px rgba(8, 3, 18, 0.32);
 }
 
 .foot-one { left: 63px; transform: skew(-12deg); }
@@ -2451,7 +2561,7 @@ h3 {
   .hero h1 { font-size: clamp(3.4rem, 10.5vw, 6rem); }
   .hero-cinema { min-height: min(70vw, 650px); }
   .cinema-screen { top: 20px; right: -24px; width: 85vw; }
-  .projector { right: auto; bottom: 42px; left: 2%; transform: scale(0.84); transform-origin: bottom left; }
+  .projector { right: auto; bottom: 28px; left: 8%; transform: scale(0.62); transform-origin: bottom left; }
   .beam { display: none; }
   .scroll-cue { display: none; }
   .story-grid { grid-template-columns: 1fr; }
@@ -2502,7 +2612,7 @@ h3 {
   .location { align-items: flex-start; }
   .hero-cinema { min-height: 78vw; margin-top: 18px; }
   .cinema-screen { right: -24px; left: 12px; width: auto; border-radius: 18px 0 0 18px; transform: rotate(-0.7deg); }
-  .projector { right: auto; bottom: 50px; left: -2%; transform: scale(0.48); transform-origin: bottom left; }
+  .projector { right: auto; bottom: 38px; left: 4%; transform: scale(0.4); transform-origin: bottom left; }
   .beam { display: none; }
   .screen-label { right: 10px; bottom: 10px; }
   .projector-dust { display: none; }

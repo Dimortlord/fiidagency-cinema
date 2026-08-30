@@ -407,8 +407,9 @@ function Hero() {
           <div className="projector" aria-hidden="true">
             <div className="projector-reel reel-one"><i /><i /><i /></div>
             <div className="projector-reel reel-two"><i /><i /><i /></div>
-            <div className="projector-body"><span>FIID</span><b /></div>
-            <div className="projector-lens" />
+            <div className="projector-body"><span>FIID</span><b /><i className="projector-knob" /></div>
+            <div className="projector-lens"><i /></div>
+            <div className="projector-base" />
             <div className="projector-foot foot-one" />
             <div className="projector-foot foot-two" />
           </div>
