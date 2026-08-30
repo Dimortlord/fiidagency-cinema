@@ -907,20 +907,6 @@ h3 {
   filter: blur(7px);
 }
 
-.screen-beam {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 0 100%, rgba(255, 185, 77, 0.22), transparent 52%),
-    linear-gradient(18deg, rgba(255, 176, 58, 0.14), rgba(255, 224, 174, 0.055) 38%, transparent 62%);
-  clip-path: polygon(0 48%, 72% 100%, 0 100%);
-  filter: blur(8px);
-  mix-blend-mode: screen;
-  opacity: 0.72;
-  pointer-events: none;
-}
-
 .projector {
   position: absolute;
   z-index: 5;
