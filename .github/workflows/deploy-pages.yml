@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Build for custom domain
-        run: npm run build -- --base=/
+        run: npm run build
 
       - name: Add SPA fallback
         run: cp dist/index.html dist/404.html

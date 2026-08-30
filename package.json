@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/create-static-routes.mjs && node scripts/check-placeholders.mjs",
     "preview": "vite preview",
     "lint": "eslint . --max-warnings=0",
     "media:prepare": "node scripts/prepare-assets.mjs"

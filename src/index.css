@@ -948,7 +948,7 @@ h3 {
 
 .author-photo img {
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
   border-radius: 5px;
 }
@@ -2053,6 +2053,12 @@ h3 {
   color: rgba(27, 16, 51, 0.45);
   font-size: 0.6rem;
   text-align: center;
+}
+
+.privacy-note a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .form-success {

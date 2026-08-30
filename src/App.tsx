@@ -35,6 +35,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { CONTACTS } from "./config/contacts";
 
 const baseUrl = import.meta.env.BASE_URL;
 const assetUrl = (path: string) => `${baseUrl}${path.replace(/^\/+/, "")}`;
@@ -368,7 +369,8 @@ function Story() {
       <div className="light-patch light-patch-one" aria-hidden="true" />
       <div className="container story-grid">
         <figure className="author-photo" data-reveal>
-          <img src={assetUrl("/img/author.webp")} alt="Дмитрий за монтажом персонального мультфильма" width="1400" height="788" loading="lazy" />
+          {/* TODO: заменить на реальное фото Дмитрия. */}
+          <img src={assetUrl("/img/author-real.jpg")} alt="Место для реального портрета Дмитрия" width="1000" height="1250" loading="lazy" />
           <figcaption><Clapperboard size={17} /> Ночной монтаж перед свадьбой</figcaption>
         </figure>
         <div className="story-copy" data-reveal>
@@ -649,7 +651,7 @@ function Idea() {
           <h2 id="idea-title">У вас своя идея?</h2>
           <p>Не обязательно выбирать из готовых форматов. Расскажите, что придумали — и я скажу, как это сделать и сколько будет стоить. Даже если идея кажется странной. Особенно если кажется странной.</p>
           <div className="button-row">
-            <a className="button button-primary" href="{{WHATSAPP}}">Написать лично <MessageCircle size={19} /></a>
+            {CONTACTS.whatsapp && <a className="button button-primary" href={CONTACTS.whatsapp}>Написать лично <MessageCircle size={19} /></a>}
             <button className="button button-outline" onClick={() => scrollToId("contact")}>Заполнить бриф <PenLine size={18} /></button>
           </div>
         </div>
@@ -717,11 +719,11 @@ function Contact() {
           <h2 id="contact-title">Расскажите, чей это будет фильм</h2>
           <p>Напишите повод и дату. Я отвечу сегодня, задам несколько вопросов и сразу скажу, какой формат подойдёт.</p>
           <div className="messenger-list">
-            <a href="{{WHATSAPP}}"><MessageCircle /><span><b>WhatsApp</b>Обычно отвечаю быстрее всего</span><ArrowRight /></a>
-            <a href="{{TELEGRAM}}"><Send /><span><b>Telegram</b>Можно голосовым сообщением</span><ArrowRight /></a>
-            <a href="mailto:{{EMAIL}}"><Mail /><span><b>E-mail</b>{"{{EMAIL}}"}</span><ArrowRight /></a>
+            {CONTACTS.whatsapp && <a href={CONTACTS.whatsapp}><MessageCircle /><span><b>WhatsApp</b>Обычно отвечаю быстрее всего</span><ArrowRight /></a>}
+            {CONTACTS.telegram && <a href={CONTACTS.telegram}><Send /><span><b>Telegram</b>Можно голосовым сообщением</span><ArrowRight /></a>}
+            {CONTACTS.email && <a href={`mailto:${CONTACTS.email}`}><Mail /><span><b>E-mail</b>{CONTACTS.email}</span><ArrowRight /></a>}
           </div>
-          <div className="contact-location"><MapPin /> Ульм, Германия · дистанционно по всей Европе</div>
+          {CONTACTS.city && <div className="contact-location"><MapPin /> {CONTACTS.city} · дистанционно по всей Европе</div>}
         </div>
 
         <form className={`brief-form ${sent ? "is-sent" : ""}`} onSubmit={submit} noValidate data-reveal>
@@ -763,7 +765,7 @@ function Contact() {
                 {errors.story && <small>{errors.story}</small>}
               </label>
               <button className="button button-primary submit-button" type="submit">Отправить историю <ArrowRight /></button>
-              <p className="privacy-note">Нажимая кнопку, вы соглашаетесь на обработку данных только для ответа на заявку.</p>
+              <p className="privacy-note">Нажимая кнопку, вы соглашаетесь на обработку данных только для ответа на заявку. <a href={pageUrl("/datenschutz")}>Подробнее</a>.</p>
             </>
           )}
         </form>
@@ -791,7 +793,7 @@ function Footer() {
           </div>
           <div className="footer-links">
             <div><span>Сцены</span>{navItems.slice(0, 4).map(([label, id]) => <button key={id} onClick={() => scrollToId(id)}>{label}</button>)}</div>
-            <div><span>Связь</span><a href="{{WHATSAPP}}">WhatsApp</a><a href="{{TELEGRAM}}">Telegram</a><a href="mailto:{{EMAIL}}">E-mail</a></div>
+            <div><span>Связь</span>{CONTACTS.whatsapp && <a href={CONTACTS.whatsapp}>WhatsApp</a>}{CONTACTS.telegram && <a href={CONTACTS.telegram}>Telegram</a>}{CONTACTS.email && <a href={`mailto:${CONTACTS.email}`}>E-mail</a>}</div>
             <div><span>Документы</span><a href={pageUrl("/impressum")}>Impressum</a><a href={pageUrl("/datenschutz")}>Datenschutz</a><button disabled>RU · DE скоро</button></div>
           </div>
         </div>
@@ -1013,9 +1015,10 @@ function Site() {
 export default function App() {
   const basePath = new URL(baseUrl, window.location.origin).pathname.replace(/\/$/, "");
   const pathname = window.location.pathname.toLowerCase();
-  const path = basePath && pathname.startsWith(basePath)
+  const resolvedPath = basePath && pathname.startsWith(basePath)
     ? pathname.slice(basePath.length) || "/"
     : pathname;
+  const path = resolvedPath.length > 1 ? resolvedPath.replace(/\/$/, "") : resolvedPath;
   if (path === "/impressum") return <LegalPage type="impressum" />;
   if (path === "/datenschutz") return <LegalPage type="datenschutz" />;
   return <Site />;
