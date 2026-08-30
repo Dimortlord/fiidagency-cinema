@@ -340,7 +340,7 @@ h3 {
 }
 
 .desktop-nav button,
-.lang-switch {
+.lang-switch a {
   padding: 8px 0;
   border: 0;
   background: transparent;
@@ -363,13 +363,41 @@ h3 {
 
 .lang-switch {
   display: flex;
-  gap: 6px;
-  cursor: default;
+  align-items: center;
+  gap: 7px;
+}
+
+.lang-switch a {
+  opacity: 0.42;
+  text-decoration: none;
+}
+
+.lang-switch a:hover,
+.lang-switch a.active {
+  color: var(--amber);
   opacity: 1;
 }
 
-.lang-switch span {
-  opacity: 0.4;
+.mobile-languages {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.mobile-languages a {
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 247, 236, 0.24);
+  border-radius: 999px;
+  color: rgba(255, 247, 236, 0.62);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mobile-languages a.active {
+  border-color: var(--amber);
+  color: var(--amber);
 }
 
 .header-cta {
@@ -2161,6 +2189,15 @@ h3 {
 .footer-links button:disabled { cursor: default; opacity: 0.45; }
 .footer-links a:hover,
 .footer-links button:not(:disabled):hover { color: var(--paper); }
+
+.footer-links .footer-languages {
+  display: flex;
+  gap: 9px;
+  margin-top: 4px;
+}
+
+.footer-languages a { opacity: 0.45; }
+.footer-languages a.active { color: var(--amber); opacity: 1; }
 
 .footer-cast {
   position: relative;

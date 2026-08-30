@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { writeFileSync } from "node:fs";
 
 const chrome = "C:/Program Files/Google/Chrome/Application/chrome.exe";
-const [widthArg = "1440", heightArg = "1000", section = "hero", output = "capture.png"] = process.argv.slice(2);
+const [widthArg = "1440", heightArg = "1000", section = "hero", output = "capture.png", targetUrl = "http://127.0.0.1:5173/"] = process.argv.slice(2);
 const width = Number(widthArg);
 const height = Number(heightArg);
 const port = 9333 + Math.floor(Math.random() * 300);
@@ -74,7 +74,7 @@ async function connect() {
     deviceScaleFactor: 1,
     mobile: width < 768,
   });
-  await send("Page.navigate", { url: "http://127.0.0.1:5173/" });
+  await send("Page.navigate", { url: targetUrl });
   await sleep(4500);
 
   if (section !== "hero") {
@@ -86,7 +86,7 @@ async function connect() {
   }
 
   const audit = await send("Runtime.evaluate", {
-    expression: `JSON.stringify({clientWidth:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth,buttons:document.querySelectorAll('button').length,videos:document.querySelectorAll('video').length,sections:document.querySelectorAll('main section').length,heading:document.querySelector('h1')?.textContent?.trim(),overflow:Array.from(document.querySelectorAll('*')).map((element)=>{const rect=element.getBoundingClientRect();return {tag:element.tagName,id:element.id,classes:element.className?.toString().slice(0,90),left:Math.round(rect.left),right:Math.round(rect.right),width:Math.round(rect.width)}}).filter((item)=>item.right>document.documentElement.clientWidth+1||item.left< -1).slice(0,20)})`,
+    expression: `JSON.stringify({lang:document.documentElement.lang,path:location.pathname,clientWidth:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth,buttons:document.querySelectorAll('button').length,videos:document.querySelectorAll('video').length,sections:document.querySelectorAll('main section').length,heading:document.querySelector('h1')?.textContent?.trim(),cyrillic:(document.body.innerText.match(/[А-Яа-яЁё]/g)||[]).length,overflow:Array.from(document.querySelectorAll('*')).map((element)=>{const rect=element.getBoundingClientRect();return {tag:element.tagName,id:element.id,classes:element.className?.toString().slice(0,90),left:Math.round(rect.left),right:Math.round(rect.right),width:Math.round(rect.width)}}).filter((item)=>item.right>document.documentElement.clientWidth+1||item.left< -1).slice(0,20)})`,
     returnByValue: true,
   });
   console.log(audit.result.value);

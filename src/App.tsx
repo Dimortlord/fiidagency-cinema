@@ -36,10 +36,16 @@ import {
   useState,
 } from "react";
 import { CONTACTS } from "./config/contacts";
+import { languageLabels, localeFromPath, localePrefix, locales, translate, type Locale } from "./i18n";
 
 const baseUrl = import.meta.env.BASE_URL;
+const locale = localeFromPath(window.location.pathname);
+const t = (source: string) => translate(locale, source);
+document.documentElement.lang = locale;
 const assetUrl = (path: string) => `${baseUrl}${path.replace(/^\/+/, "")}`;
-const pageUrl = (path: string) => `${baseUrl}${path.replace(/^\/+/, "")}`;
+const localeRoot = `${baseUrl}${localePrefix(locale)}`;
+const pageUrl = (path: string) => `${localeRoot}${path.replace(/^\/+/, "")}`;
+const languageUrl = (nextLocale: Locale) => `${baseUrl}${localePrefix(nextLocale)}`;
 
 const navItems = [
   ["История", "story"],
@@ -226,28 +232,28 @@ function Header() {
   return (
     <header className={`site-header ${hidden ? "is-hidden" : ""}`}>
       <div className="header-inner">
-        <button className="brand" onClick={() => navigate("hero")} aria-label="На первый экран">
+          <button className="brand" onClick={() => navigate("hero")} aria-label={t("На первый экран")}>
           <span className="brand-mark"><Film size={21} /></span>
           <span>FIID <i>CINEMA</i></span>
         </button>
 
-        <nav className="desktop-nav" aria-label="Главная навигация">
+        <nav className="desktop-nav" aria-label={t("Главная навигация")}>
           {navItems.map(([label, id]) => (
-            <button key={id} onClick={() => navigate(id)}>{label}</button>
+            <button key={id} onClick={() => navigate(id)}>{t(label)}</button>
           ))}
         </nav>
 
         <div className="header-actions">
-          <button className="lang-switch" type="button" disabled aria-label="Русская версия активна">
-            RU <span>DE</span>
-          </button>
-          <button className="header-cta" onClick={() => navigate("contact")}>Обсудить фильм</button>
+          <nav className="lang-switch" aria-label={t("Выбор языка")}>
+            {locales.map((item) => <a key={item} className={item === locale ? "active" : ""} href={languageUrl(item)} lang={item} hrefLang={item} aria-current={item === locale ? "page" : undefined}>{languageLabels[item]}</a>)}
+          </nav>
+          <button className="header-cta" onClick={() => navigate("contact")}>{t("Обсудить фильм")}</button>
           <button
             className="menu-button"
             onClick={() => setMenuOpen((open) => !open)}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
-            aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+            aria-label={t(menuOpen ? "Закрыть меню" : "Открыть меню")}
           >
             {menuOpen ? <X /> : <Menu />}
           </button>
@@ -256,13 +262,16 @@ function Header() {
 
       <div id="mobile-menu" className={`mobile-menu ${menuOpen ? "is-open" : ""}`} aria-hidden={!menuOpen}>
         <div className="mobile-menu-inner">
-          <p>Ваш следующий фильм</p>
+          <p>{t("Ваш следующий фильм")}</p>
           {navItems.map(([label, id], index) => (
             <button key={id} onClick={() => navigate(id)}>
-              <span>0{index + 1}</span>{label}<ArrowRight />
+              <span>0{index + 1}</span>{t(label)}<ArrowRight />
             </button>
           ))}
-          <div className="mobile-menu-foot">Ульм · работаем по всей Европе</div>
+          <div className="mobile-languages" aria-label={t("Выбор языка")}>
+            {locales.map((item) => <a key={item} className={item === locale ? "active" : ""} href={languageUrl(item)} lang={item} hrefLang={item} aria-current={item === locale ? "page" : undefined}>{languageLabels[item]}</a>)}
+          </div>
+          <div className="mobile-menu-foot">{t("Ульм · работаем по всей Европе")}</div>
         </div>
       </div>
     </header>
@@ -290,7 +299,7 @@ function Filmstrip() {
   }, [sections]);
 
   return (
-    <aside className="filmstrip" aria-label="Навигация по сценам">
+    <aside className="filmstrip" aria-label={t("Навигация по сценам")}>
       <div className="film-perforations" />
       <div className="film-frames">
         {sections.map((id, index) => (
@@ -298,7 +307,7 @@ function Filmstrip() {
             className={active === id ? "active" : ""}
             key={id}
             onClick={() => scrollToId(id)}
-            aria-label={`Перейти к сцене ${index + 1}`}
+            aria-label={`${t("Перейти к сцене")} ${index + 1}`}
           >
             <img src={assetUrl(`/img/frames/0${(index % 8) + 1}.webp`)} alt="" width="120" height="68" />
             <span>{String(index + 1).padStart(2, "0")}</span>
@@ -322,28 +331,28 @@ function Hero() {
       <div className="projector-dust" aria-hidden="true" />
       <div className="container hero-grid">
         <div className="hero-copy">
-          <p className="eyebrow">Персональные мультфильмы на заказ</p>
-          <h1 id="hero-title">Ваша история — <span>теперь мультфильм</span></h1>
-          <p className="hero-lead">5 минут, ради которых в зале становится тихо. Герои — вы. Сюжет — то, что было на самом деле.</p>
+          <p className="eyebrow">{t("Персональные мультфильмы на заказ")}</p>
+          <h1 id="hero-title">{t("Ваша история —")} <span>{t("теперь мультфильм")}</span></h1>
+          <p className="hero-lead">{t("5 минут, ради которых в зале становится тихо. Герои — вы. Сюжет — то, что было на самом деле.")}</p>
           <div className="button-row">
             <button className="button button-primary" onClick={() => scrollToId("contact")}>
-              Хочу такой мультфильм <ArrowRight size={19} />
+              {t("Хочу такой мультфильм")} <ArrowRight size={19} />
             </button>
             <button className="button button-outline" onClick={() => scrollToId("works")}>
-              <Play size={18} fill="currentColor" /> Посмотреть свадебный фильм
+              <Play size={18} fill="currentColor" /> {t("Посмотреть свадебный фильм")}
             </button>
           </div>
-          <p className="location"><MapPin size={16} /> Ульм · Баден-Вюртемберг · работаем по всей Европе</p>
+          <p className="location"><MapPin size={16} /> {t("Ульм · Баден-Вюртемберг · работаем по всей Европе")}</p>
         </div>
 
         <div className="hero-cinema">
           <div className="beam" aria-hidden="true" />
           <div className="cinema-screen">
-            <video ref={videoRef} autoPlay muted loop playsInline preload="metadata" poster={assetUrl("/img/hero-poster.webp")} aria-label="Фрагменты персональных мультфильмов">
+            <video ref={videoRef} autoPlay muted loop playsInline preload="metadata" poster={assetUrl("/img/hero-poster.webp")} aria-label={t("Фрагменты персональных мультфильмов")}>
               <source src={assetUrl("/video/hero-reel.mp4")} type="video/mp4" />
             </video>
             <div className="screen-vignette" />
-            <div className="screen-label"><span /> Идёт показ</div>
+            <div className="screen-label"><span /> {t("Идёт показ")}</div>
           </div>
           <div className="projector" aria-hidden="true">
             <div className="projector-reel reel-one"><i /><i /><i /></div>
@@ -356,8 +365,8 @@ function Hero() {
         </div>
       </div>
 
-      <button className="scroll-cue" onClick={() => scrollToId("story")} aria-label="Листать к следующей сцене">
-        <span>Листайте — фильм начинается</span><ArrowDown />
+      <button className="scroll-cue" onClick={() => scrollToId("story")} aria-label={t("Листать к следующей сцене")}>
+        <span>{t("Листайте — фильм начинается")}</span><ArrowDown />
       </button>
     </section>
   );
@@ -370,21 +379,21 @@ function Story() {
       <div className="container story-grid">
         <figure className="author-photo" data-reveal>
           {/* TODO: заменить на реальное фото Дмитрия. */}
-          <img src={assetUrl("/img/author-real.jpg")} alt="Место для реального портрета Дмитрия" width="1000" height="1250" loading="lazy" />
-          <figcaption><Clapperboard size={17} /> Ночной монтаж перед свадьбой</figcaption>
+          <img src={assetUrl("/img/author-real.jpg")} alt={t("Место для реального портрета Дмитрия")} width="1000" height="1250" loading="lazy" />
+          <figcaption><Clapperboard size={17} /> {t("Ночной монтаж перед свадьбой")}</figcaption>
         </figure>
         <div className="story-copy" data-reveal>
-          <p className="section-kicker">Сцена 02 · Начало</p>
-          <h2 id="story-title">Первый мультфильм я сделал для своей жены</h2>
-          <p>На нашей свадьбе я показал гостям пятиминутный мультфильм. В нём мы с женой искали друг друга через века: пещеры, Египет, рыцарский турнир, корабль, поезд — и наконец наши дни, наш город, наша машина.</p>
-          <p>Когда включился экран, зал замолчал. Потом моя жена заплакала. Потом заплакала половина гостей. Мы пересматривали его ещё раз в ту же ночь, и ещё раз через неделю, и будем пересматривать через двадцать лет.</p>
-          <p>Фотографии с праздника листают один раз и убирают в папку. Такой фильм пересматривают. Поэтому я стал делать их для других.</p>
+          <p className="section-kicker">{t("Сцена 02 · Начало")}</p>
+          <h2 id="story-title">{t("Первый мультфильм я сделал для своей жены")}</h2>
+          <p>{t("На нашей свадьбе я показал гостям пятиминутный мультфильм. В нём мы с женой искали друг друга через века: пещеры, Египет, рыцарский турнир, корабль, поезд — и наконец наши дни, наш город, наша машина.")}</p>
+          <p>{t("Когда включился экран, зал замолчал. Потом моя жена заплакала. Потом заплакала половина гостей. Мы пересматривали его ещё раз в ту же ночь, и ещё раз через неделю, и будем пересматривать через двадцать лет.")}</p>
+          <p>{t("Фотографии с праздника листают один раз и убирают в папку. Такой фильм пересматривают. Поэтому я стал делать их для других.")}</p>
           <div className="story-end">
-            <span className="signature">Дмитрий</span>
-            <div className="story-stats" aria-label="Фильм в цифрах">
-              <span><b>5</b> минут</span>
-              <span><b>100+</b> кадров</span>
-              <span><b>1</b> история</span>
+            <span className="signature">{t("Дмитрий")}</span>
+            <div className="story-stats" aria-label={t("Фильм в цифрах")}>
+              <span><b>5</b> {t("минут")}</span>
+              <span><b>100+</b> {t("кадров")}</span>
+              <span><b>1</b> {t("история")}</span>
             </div>
           </div>
         </div>
@@ -399,12 +408,12 @@ function Formats() {
     <section id="formats" className="formats paper-section" aria-labelledby="formats-title">
       <div className="container">
         <div className="section-heading" data-reveal>
-          <p className="section-kicker">Сцена 03 · Формат</p>
-          <h2 id="formats-title">Какие мультфильмы я делаю</h2>
-          <p>Выберите повод — хронометраж и сюжет подстроим под вашу историю.</p>
+          <p className="section-kicker">{t("Сцена 03 · Формат")}</p>
+          <h2 id="formats-title">{t("Какие мультфильмы я делаю")}</h2>
+          <p>{t("Выберите повод — хронометраж и сюжет подстроим под вашу историю.")}</p>
         </div>
 
-        <div className="occasion-tabs" role="tablist" aria-label="Повод для фильма">
+        <div className="occasion-tabs" role="tablist" aria-label={t("Повод для фильма")}>
           {occasions.map((item) => (
             <button
               key={item}
@@ -412,30 +421,30 @@ function Formats() {
               aria-selected={occasion === item}
               className={occasion === item ? "active" : ""}
               onClick={() => setOccasion(item)}
-            >{item}</button>
+            >{t(item)}</button>
           ))}
         </div>
-        <div className="occasion-note" key={occasion}><Sparkles size={18} /> {occasionLines[occasion]}</div>
+        <div className="occasion-note" key={occasion}><Sparkles size={18} /> {t(occasionLines[occasion])}</div>
 
         <div className="price-grid">
           {formats.map((format) => (
             <article className={`price-card ${format.featured ? "featured" : ""}`} key={format.name} data-reveal>
-              {format.featured && <div className="popular-ribbon">Чаще всего берут</div>}
+              {format.featured && <div className="popular-ribbon">{t("Чаще всего берут")}</div>}
               <div className="price-card-head">
-                <span>{format.duration}</span>
-                <h3>{format.name}</h3>
-                <strong>{format.price}</strong>
+                <span>{t(format.duration)}</span>
+                <h3>{t(format.name)}</h3>
+                <strong>{t(format.price)}</strong>
               </div>
-              <p>{format.description}</p>
-              <div className="timing"><Clock3 size={17} /> {format.timing}</div>
+              <p>{t(format.description)}</p>
+              <div className="timing"><Clock3 size={17} /> {t(format.timing)}</div>
               <ul>
-                {format.included.map((item) => <li key={item}><Check size={17} /> {item}</li>)}
+                {format.included.map((item) => <li key={item}><Check size={17} /> {t(item)}</li>)}
               </ul>
-              <button className="text-link" onClick={() => scrollToId("contact")}>Обсудить <ArrowRight size={18} /></button>
+              <button className="text-link" onClick={() => scrollToId("contact")}>{t("Обсудить")} <ArrowRight size={18} /></button>
             </article>
           ))}
         </div>
-        <p className="pricing-footnote">Точная цена зависит от количества сцен и сроков. Скажите повод и дату — назову стоимость в тот же день.</p>
+        <p className="pricing-footnote">{t("Точная цена зависит от количества сцен и сроков. Скажите повод и дату — назову стоимость в тот же день.")}</p>
       </div>
     </section>
   );
@@ -449,9 +458,9 @@ function Process({ processRef, trackRef }: {
     <section id="process" className="process night-section" ref={processRef} aria-labelledby="process-title">
       <div className="process-inner">
         <div className="container process-heading">
-          <p className="section-kicker light">Сцена 04 · Производство</p>
-          <h2 id="process-title">От заявки до премьеры</h2>
-          <p>Семь понятных шагов. На каждом вы знаете, что уже готово и что будет дальше.</p>
+          <p className="section-kicker light">{t("Сцена 04 · Производство")}</p>
+          <h2 id="process-title">{t("От заявки до премьеры")}</h2>
+          <p>{t("Семь понятных шагов. На каждом вы знаете, что уже готово и что будет дальше.")}</p>
         </div>
         <div className="process-viewport">
           <div className="process-track" ref={trackRef}>
@@ -459,14 +468,14 @@ function Process({ processRef, trackRef }: {
               <article className="process-card" key={title}>
                 <div className="step-number">{String(index + 1).padStart(2, "0")}</div>
                 <div className="step-icon"><Icon /></div>
-                <h3>{title}</h3>
-                <p>{text}</p>
+                <h3>{t(title)}</h3>
+                <p>{t(text)}</p>
                 <span className="step-line" />
               </article>
             ))}
           </div>
         </div>
-        <div className="process-hint"><ArrowRight /> Лента движется вместе со страницей</div>
+        <div className="process-hint"><ArrowRight /> {t("Лента движется вместе со страницей")}</div>
       </div>
     </section>
   );
@@ -477,16 +486,16 @@ function Bonuses() {
     <section id="bonuses" className="bonuses paper-section" aria-labelledby="bonuses-title">
       <div className="container">
         <div className="section-heading compact" data-reveal>
-          <p className="section-kicker">Сцена 05 · После титров</p>
-          <h2 id="bonuses-title">Что вы получаете сверх фильма</h2>
+          <p className="section-kicker">{t("Сцена 05 · После титров")}</p>
+          <h2 id="bonuses-title">{t("Что вы получаете сверх фильма")}</h2>
         </div>
         <div className="bonus-grid">
           {bonuses.map(([title, text, Icon], index) => (
             <article className={`bonus-card tone-${index + 1}`} key={title} data-reveal>
               <div className="bonus-icon"><Icon /></div>
-              <h3>{title}</h3>
-              <p>{text}</p>
-              <span>Входит в фильм</span>
+              <h3>{t(title)}</h3>
+              <p>{t(text)}</p>
+              <span>{t("Входит в фильм")}</span>
             </article>
           ))}
         </div>
@@ -520,35 +529,35 @@ function Works({ showcaseRef, videoRef }: {
     <section id="works" className="works night-section" aria-labelledby="works-title">
       <div className="showcase-stage" ref={showcaseRef}>
         <div className="showcase-title">
-          <p className="section-kicker light">Сцена 06 · Большой экран</p>
-          <h2 id="works-title">Вот как выглядит ваша премьера</h2>
+          <p className="section-kicker light">{t("Сцена 06 · Большой экран")}</p>
+          <h2 id="works-title">{t("Вот как выглядит ваша премьера")}</h2>
         </div>
         <div className="showcase-screen">
-          <video ref={videoRef} muted loop playsInline preload="none" poster={assetUrl("/img/frames/08.webp")} aria-label="Фрагмент фильма о предложении руки и сердца">
+          <video ref={videoRef} muted loop playsInline preload="none" poster={assetUrl("/img/frames/08.webp")} aria-label={t("Фрагмент фильма о предложении руки и сердца")}>
             <source src={`${assetUrl("/video/showcase.mp4")}?v=2`} type="video/mp4" />
           </video>
           <div className="showcase-vignette" />
-          <div className="showcase-status"><span /> Фрагмент фильма · 00:24</div>
+          <div className="showcase-status"><span /> {t("Фрагмент фильма · 00:24")}</div>
         </div>
         <div className="thesis-layer">
           {theses.map(([title, text], index) => (
             <article className={`thesis thesis-${index + 1}`} data-thesis key={title}>
-              <span>0{index + 1}</span><h3>{title}</h3><p>{text}</p>
+              <span>0{index + 1}</span><h3>{t(title)}</h3><p>{t(text)}</p>
             </article>
           ))}
         </div>
-        <div className="showcase-scroll"><ArrowDown /> Листайте фильм</div>
+        <div className="showcase-scroll"><ArrowDown /> {t("Листайте фильм")}</div>
       </div>
 
       <div className="container gallery-block">
         <div className="gallery-heading" data-reveal>
-          <div><p className="section-kicker light">Стоп-кадры</p><h3>Одна история. Восемь миров.</h3></div>
-          <p>Нажмите на кадр, чтобы рассмотреть детали.</p>
+          <div><p className="section-kicker light">{t("Стоп-кадры")}</p><h3>{t("Одна история. Восемь миров.")}</h3></div>
+          <p>{t("Нажмите на кадр, чтобы рассмотреть детали.")}</p>
         </div>
         <div className="gallery-grid">
           {galleryFrames.map((frame, index) => (
-            <button key={frame.src} onClick={() => setLightbox(index)} aria-label={`Открыть кадр ${index + 1}`}>
-              <img src={frame.src} alt={frame.alt} width="1200" height="675" loading="lazy" />
+            <button key={frame.src} onClick={() => setLightbox(index)} aria-label={`${t("Открыть кадр")} ${index + 1}`}>
+              <img src={frame.src} alt={t(frame.alt)} width="1200" height="675" loading="lazy" />
               <span>0{index + 1} <Frame size={18} /></span>
             </button>
           ))}
@@ -556,14 +565,14 @@ function Works({ showcaseRef, videoRef }: {
       </div>
 
       {lightbox !== null && (
-        <div className="lightbox" role="dialog" aria-modal="true" aria-label="Просмотр кадра" onMouseDown={() => setLightbox(null)}>
-          <button className="lightbox-close" onClick={() => setLightbox(null)} aria-label="Закрыть"><X /></button>
-          <button className="lightbox-arrow prev" onMouseDown={(e) => e.stopPropagation()} onClick={() => setLightbox((lightbox - 1 + galleryFrames.length) % galleryFrames.length)} aria-label="Предыдущий кадр"><ArrowRight /></button>
+        <div className="lightbox" role="dialog" aria-modal="true" aria-label={t("Просмотр кадра")} onMouseDown={() => setLightbox(null)}>
+          <button className="lightbox-close" onClick={() => setLightbox(null)} aria-label={t("Закрыть")}><X /></button>
+          <button className="lightbox-arrow prev" onMouseDown={(e) => e.stopPropagation()} onClick={() => setLightbox((lightbox - 1 + galleryFrames.length) % galleryFrames.length)} aria-label={t("Предыдущий кадр")}><ArrowRight /></button>
           <figure onMouseDown={(event) => event.stopPropagation()}>
-            <img src={galleryFrames[lightbox].src} alt={galleryFrames[lightbox].alt} />
-            <figcaption><span>0{lightbox + 1}</span>{galleryFrames[lightbox].alt}</figcaption>
+            <img src={galleryFrames[lightbox].src} alt={t(galleryFrames[lightbox].alt)} />
+            <figcaption><span>0{lightbox + 1}</span>{t(galleryFrames[lightbox].alt)}</figcaption>
           </figure>
-          <button className="lightbox-arrow next" onMouseDown={(e) => e.stopPropagation()} onClick={() => setLightbox((lightbox + 1) % galleryFrames.length)} aria-label="Следующий кадр"><ArrowRight /></button>
+          <button className="lightbox-arrow next" onMouseDown={(e) => e.stopPropagation()} onClick={() => setLightbox((lightbox + 1) % galleryFrames.length)} aria-label={t("Следующий кадр")}><ArrowRight /></button>
         </div>
       )}
     </section>
@@ -604,13 +613,13 @@ function FilmPlayer() {
   };
   return (
     <figure className="first-film" ref={figureRef} data-reveal>
-      <video ref={videoRef} muted loop playsInline preload="none" poster={assetUrl("/img/frames/01.webp")} aria-label="Фрагмент первого свадебного мультфильма">
+      <video ref={videoRef} muted loop playsInline preload="none" poster={assetUrl("/img/frames/01.webp")} aria-label={t("Фрагмент первого свадебного мультфильма")}>
         <source src={assetUrl("/video/first-film.mp4")} type="video/mp4" />
       </video>
-      <button onClick={toggle} aria-label={playing ? "Поставить на паузу" : "Продолжить просмотр"}>
+      <button onClick={toggle} aria-label={t(playing ? "Поставить на паузу" : "Продолжить просмотр")}>
         {playing ? <Pause fill="currentColor" /> : <Play fill="currentColor" />}
       </button>
-      <figcaption><span /> Первый показ · август 2026</figcaption>
+      <figcaption><span /> {t("Первый показ · август 2026")}</figcaption>
     </figure>
   );
 }
@@ -622,13 +631,13 @@ function Trust() {
       <div className="container trust-grid">
         <FilmPlayer />
         <div className="trust-copy" data-reveal>
-          <p className="section-kicker">Сцена 07 · Честно</p>
-          <h2 id="trust-title">Пока отзывов нет — есть кое-что лучше</h2>
-          <p>Я начал делать это недавно и сейчас собираю первые работы. Поэтому первым десяти клиентам — цена ниже и максимум внимания к деталям.</p>
-          <p>Взамен прошу разрешение показать готовый фильм в портфолио. Если история личная и показывать её нельзя — тоже нормально, просто скажите.</p>
+          <p className="section-kicker">{t("Сцена 07 · Честно")}</p>
+          <h2 id="trust-title">{t("Пока отзывов нет — есть кое-что лучше")}</h2>
+          <p>{t("Я начал делать это недавно и сейчас собираю первые работы. Поэтому первым десяти клиентам — цена ниже и максимум внимания к деталям.")}</p>
+          <p>{t("Взамен прошу разрешение показать готовый фильм в портфолио. Если история личная и показывать её нельзя — тоже нормально, просто скажите.")}</p>
           <div className="trust-actions">
-            <button className="button button-primary" onClick={() => scrollToId("contact")}>Войти в первую десятку <ArrowRight size={19} /></button>
-            <span className="places"><i /> Осталось мест: <b>{placesLeft}</b></span>
+            <button className="button button-primary" onClick={() => scrollToId("contact")}>{t("Войти в первую десятку")} <ArrowRight size={19} /></button>
+            <span className="places"><i /> {t("Осталось мест:")} <b>{placesLeft}</b></span>
           </div>
         </div>
       </div>
@@ -643,16 +652,16 @@ function Idea() {
       <div className="container idea-grid">
         <div className="idea-character" data-reveal>
           <div className="bulb"><Lightbulb /></div>
-          <img src={assetUrl("/img/people/dmitriy.webp")} alt="Персонаж придумывает новую историю" width="680" height="1052" loading="lazy" />
+          <img src={assetUrl("/img/people/dmitriy.webp")} alt={t("Персонаж придумывает новую историю")} width="680" height="1052" loading="lazy" />
           <div className="idea-bubbles"><i /><i /><i /></div>
         </div>
         <div className="idea-copy" data-reveal>
-          <p className="section-kicker light">Сцена 08 · Без рамок</p>
-          <h2 id="idea-title">У вас своя идея?</h2>
-          <p>Не обязательно выбирать из готовых форматов. Расскажите, что придумали — и я скажу, как это сделать и сколько будет стоить. Даже если идея кажется странной. Особенно если кажется странной.</p>
+          <p className="section-kicker light">{t("Сцена 08 · Без рамок")}</p>
+          <h2 id="idea-title">{t("У вас своя идея?")}</h2>
+          <p>{t("Не обязательно выбирать из готовых форматов. Расскажите, что придумали — и я скажу, как это сделать и сколько будет стоить. Даже если идея кажется странной. Особенно если кажется странной.")}</p>
           <div className="button-row">
-            {CONTACTS.whatsapp && <a className="button button-primary" href={CONTACTS.whatsapp}>Написать лично <MessageCircle size={19} /></a>}
-            <button className="button button-outline" onClick={() => scrollToId("contact")}>Заполнить бриф <PenLine size={18} /></button>
+            {CONTACTS.whatsapp && <a className="button button-primary" href={CONTACTS.whatsapp}>{t("Написать лично")} <MessageCircle size={19} /></a>}
+            <button className="button button-outline" onClick={() => scrollToId("contact")}>{t("Заполнить бриф")} <PenLine size={18} /></button>
           </div>
         </div>
       </div>
@@ -666,8 +675,8 @@ function FAQ() {
     <section id="faq" className="faq paper-section" aria-labelledby="faq-title">
       <div className="container">
         <div className="section-heading compact" data-reveal>
-          <p className="section-kicker">Сцена 09 · Без сюрпризов</p>
-          <h2 id="faq-title">Частые вопросы</h2>
+          <p className="section-kicker">{t("Сцена 09 · Без сюрпризов")}</p>
+          <h2 id="faq-title">{t("Частые вопросы")}</h2>
         </div>
         <div className="faq-list">
           {faqs.map(([question, answer], index) => {
@@ -676,10 +685,10 @@ function FAQ() {
               <article className={isOpen ? "open" : ""} key={question}>
                 <h3>
                   <button onClick={() => setOpen(isOpen ? -1 : index)} aria-expanded={isOpen} aria-controls={`faq-answer-${index}`}>
-                    <span>{String(index + 1).padStart(2, "0")}</span>{question}<ChevronDown />
+                    <span>{String(index + 1).padStart(2, "0")}</span>{t(question)}<ChevronDown />
                   </button>
                 </h3>
-                <div id={`faq-answer-${index}`} className="faq-answer"><p>{answer}</p></div>
+                <div id={`faq-answer-${index}`} className="faq-answer"><p>{t(answer)}</p></div>
               </article>
             );
           })}
@@ -699,9 +708,9 @@ function Contact() {
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const nextErrors: Partial<Record<keyof FormFields, string>> = {};
-    if (fields.name.trim().length < 2) nextErrors.name = "Как к вам обращаться?";
-    if (fields.contact.trim().length < 5) nextErrors.contact = "Оставьте телефон, ник или e-mail";
-    if (fields.story.trim().length < 8) nextErrors.story = "Расскажите хотя бы в двух словах";
+    if (fields.name.trim().length < 2) nextErrors.name = t("Как к вам обращаться?");
+    if (fields.contact.trim().length < 5) nextErrors.contact = t("Оставьте телефон, ник или e-mail");
+    if (fields.story.trim().length < 8) nextErrors.story = t("Расскажите хотя бы в двух словах");
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length === 0) setSent(true);
   };
@@ -715,57 +724,57 @@ function Contact() {
     <section id="contact" className="contact paper-section" aria-labelledby="contact-title">
       <div className="container contact-grid">
         <div className="contact-copy" data-reveal>
-          <p className="section-kicker">Сцена 10 · Начнём с разговора</p>
-          <h2 id="contact-title">Расскажите, чей это будет фильм</h2>
-          <p>Напишите повод и дату. Я отвечу сегодня, задам несколько вопросов и сразу скажу, какой формат подойдёт.</p>
+          <p className="section-kicker">{t("Сцена 10 · Начнём с разговора")}</p>
+          <h2 id="contact-title">{t("Расскажите, чей это будет фильм")}</h2>
+          <p>{t("Напишите повод и дату. Я отвечу сегодня, задам несколько вопросов и сразу скажу, какой формат подойдёт.")}</p>
           <div className="messenger-list">
-            {CONTACTS.whatsapp && <a href={CONTACTS.whatsapp}><MessageCircle /><span><b>WhatsApp</b>Обычно отвечаю быстрее всего</span><ArrowRight /></a>}
-            {CONTACTS.telegram && <a href={CONTACTS.telegram}><Send /><span><b>Telegram</b>Можно голосовым сообщением</span><ArrowRight /></a>}
+            {CONTACTS.whatsapp && <a href={CONTACTS.whatsapp}><MessageCircle /><span><b>WhatsApp</b>{t("Обычно отвечаю быстрее всего")}</span><ArrowRight /></a>}
+            {CONTACTS.telegram && <a href={CONTACTS.telegram}><Send /><span><b>Telegram</b>{t("Можно голосовым сообщением")}</span><ArrowRight /></a>}
             {CONTACTS.email && <a href={`mailto:${CONTACTS.email}`}><Mail /><span><b>E-mail</b>{CONTACTS.email}</span><ArrowRight /></a>}
           </div>
-          {CONTACTS.city && <div className="contact-location"><MapPin /> {CONTACTS.city} · дистанционно по всей Европе</div>}
+          {CONTACTS.city && <div className="contact-location"><MapPin /> {t(CONTACTS.city)} · {t("дистанционно по всей Европе")}</div>}
         </div>
 
         <form className={`brief-form ${sent ? "is-sent" : ""}`} onSubmit={submit} noValidate data-reveal>
           {sent ? (
             <div className="form-success" role="status">
               <div><Check /></div>
-              <p>Получил. Отвечу сегодня.</p>
-              <span>А пока можете сохранить страницу — ваша история уже сделала первый шаг к экрану.</span>
-              <button type="button" className="text-link" onClick={() => setSent(false)}>Отправить ещё одну заявку</button>
+              <p>{t("Получил. Отвечу сегодня.")}</p>
+              <span>{t("А пока можете сохранить страницу — ваша история уже сделала первый шаг к экрану.")}</span>
+              <button type="button" className="text-link" onClick={() => setSent(false)}>{t("Отправить ещё одну заявку")}</button>
             </div>
           ) : (
             <>
-              <div className="form-heading"><span>Короткий бриф</span><b>≈ 2 минуты</b></div>
+              <div className="form-heading"><span>{t("Короткий бриф")}</span><b>{t("≈ 2 минуты")}</b></div>
               <label>
-                Как вас зовут?
-                <input value={fields.name} onChange={(e) => update("name", e.target.value)} placeholder="Имя" aria-invalid={Boolean(errors.name)} />
+                {t("Как вас зовут?")}
+                <input value={fields.name} onChange={(e) => update("name", e.target.value)} placeholder={t("Имя")} aria-invalid={Boolean(errors.name)} />
                 {errors.name && <small>{errors.name}</small>}
               </label>
               <label>
-                Куда ответить?
-                <input value={fields.contact} onChange={(e) => update("contact", e.target.value)} placeholder="Телефон, Telegram или e-mail" aria-invalid={Boolean(errors.contact)} />
+                {t("Куда ответить?")}
+                <input value={fields.contact} onChange={(e) => update("contact", e.target.value)} placeholder={t("Телефон, Telegram или e-mail")} aria-invalid={Boolean(errors.contact)} />
                 {errors.contact && <small>{errors.contact}</small>}
               </label>
               <div className="form-row">
                 <label>
-                  Повод
+                  {t("Повод")}
                   <select value={fields.occasion} onChange={(e) => update("occasion", e.target.value)}>
-                    {occasions.map((item) => <option key={item}>{item}</option>)}
+                    {occasions.map((item) => <option key={item} value={item}>{t(item)}</option>)}
                   </select>
                 </label>
                 <label>
-                  Дата показа
+                  {t("Дата показа")}
                   <input type="date" value={fields.date} onChange={(e) => update("date", e.target.value)} />
                 </label>
               </div>
               <label>
-                О чём ваша история?
-                <textarea value={fields.story} onChange={(e) => update("story", e.target.value)} placeholder="Например: познакомились в поезде, а предложение было в Венеции…" rows={4} aria-invalid={Boolean(errors.story)} />
+                {t("О чём ваша история?")}
+                <textarea value={fields.story} onChange={(e) => update("story", e.target.value)} placeholder={t("Например: познакомились в поезде, а предложение было в Венеции…")} rows={4} aria-invalid={Boolean(errors.story)} />
                 {errors.story && <small>{errors.story}</small>}
               </label>
-              <button className="button button-primary submit-button" type="submit">Отправить историю <ArrowRight /></button>
-              <p className="privacy-note">Нажимая кнопку, вы соглашаетесь на обработку данных только для ответа на заявку. <a href={pageUrl("/datenschutz")}>Подробнее</a>.</p>
+              <button className="button button-primary submit-button" type="submit">{t("Отправить историю")} <ArrowRight /></button>
+              <p className="privacy-note">{t("Нажимая кнопку, вы соглашаетесь на обработку данных только для ответа на заявку.")} <a href={pageUrl("/datenschutz")}>{t("Подробнее")}</a>.</p>
             </>
           )}
         </form>
@@ -789,28 +798,28 @@ function Footer() {
         <div className="footer-top">
           <div className="footer-brand">
             <div className="brand"><span className="brand-mark"><Film size={21} /></span><span>FIID <i>CINEMA</i></span></div>
-            <p>Настоящие истории.<br />Большая семейная анимация.</p>
+            <p>{t("Настоящие истории.")}<br />{t("Большая семейная анимация.")}</p>
           </div>
           <div className="footer-links">
-            <div><span>Сцены</span>{navItems.slice(0, 4).map(([label, id]) => <button key={id} onClick={() => scrollToId(id)}>{label}</button>)}</div>
-            <div><span>Связь</span>{CONTACTS.whatsapp && <a href={CONTACTS.whatsapp}>WhatsApp</a>}{CONTACTS.telegram && <a href={CONTACTS.telegram}>Telegram</a>}{CONTACTS.email && <a href={`mailto:${CONTACTS.email}`}>E-mail</a>}</div>
-            <div><span>Документы</span><a href={pageUrl("/impressum")}>Impressum</a><a href={pageUrl("/datenschutz")}>Datenschutz</a><button disabled>RU · DE скоро</button></div>
+            <div><span>{t("Сцены")}</span>{navItems.slice(0, 4).map(([label, id]) => <button key={id} onClick={() => scrollToId(id)}>{t(label)}</button>)}</div>
+            <div><span>{t("Связь")}</span>{CONTACTS.whatsapp && <a href={CONTACTS.whatsapp}>WhatsApp</a>}{CONTACTS.telegram && <a href={CONTACTS.telegram}>Telegram</a>}{CONTACTS.email && <a href={`mailto:${CONTACTS.email}`}>E-mail</a>}</div>
+            <div><span>{t("Документы")}</span><a href={pageUrl("/impressum")}>Impressum</a><a href={pageUrl("/datenschutz")}>Datenschutz</a><div className="footer-languages">{locales.map((item) => <a key={item} className={item === locale ? "active" : ""} href={languageUrl(item)} lang={item} hrefLang={item} aria-current={item === locale ? "page" : undefined}>{languageLabels[item]}</a>)}</div></div>
           </div>
         </div>
 
-        <div className="footer-cast" aria-label="Герои наших историй">
+        <div className="footer-cast" aria-label={t("Герои наших историй")}>
           {footerPeople.map(([src, alt], index) => (
             <div className={`cast-member cast-${index + 1}`} key={src}>
-              <img src={src} alt={alt} width="120" height="120" loading="lazy" />
+              <img src={src} alt={t(alt)} width="120" height="120" loading="lazy" />
               <span aria-hidden="true">👋</span>
             </div>
           ))}
-          <p>До встречи<br />на премьере</p>
+          <p>{t("До встречи")}<br />{t("на премьере")}</p>
         </div>
 
         <div className="footer-bottom">
-          <span>© 2026 FIID Cinema · Ульм, Германия</span>
-          <span>Сайт собран с вниманием в <a href="https://fiidagency.com" target="_blank" rel="noreferrer">fiidagency.com</a></span>
+          <span>© 2026 FIID Cinema · {t("Ульм, Германия")}</span>
+          <span>{t("Сайт собран с вниманием в")} <a href="https://fiidagency.com" target="_blank" rel="noreferrer">fiidagency.com</a></span>
         </div>
       </div>
     </footer>
@@ -821,13 +830,13 @@ function LegalPage({ type }: { type: "impressum" | "datenschutz" }) {
   const isImpressum = type === "impressum";
   return (
     <main className="legal-page night-section">
-      <a className="brand" href={baseUrl}><span className="brand-mark"><Film size={21} /></span><span>FIID <i>CINEMA</i></span></a>
+      <a className="brand" href={localeRoot}><span className="brand-mark"><Film size={21} /></span><span>FIID <i>CINEMA</i></span></a>
       <div>
-        <p className="eyebrow">Юридическая информация</p>
+        <p className="eyebrow">{t("Юридическая информация")}</p>
         <h1>{isImpressum ? "Impressum" : "Datenschutz"}</h1>
-        <p>{isImpressum ? "Здесь будут размещены данные владельца сайта и контактная информация в соответствии с требованиями законодательства Германии." : "Здесь будет размещена политика обработки персональных данных и информация об используемых сервисах."}</p>
-        <p>Перед публикацией замените этот текст на финальную юридическую редакцию.</p>
-        <a className="button button-primary" href={baseUrl}>Вернуться к фильму <ArrowRight /></a>
+        <p>{t(isImpressum ? "Здесь будут размещены данные владельца сайта и контактная информация в соответствии с требованиями законодательства Германии." : "Здесь будет размещена политика обработки персональных данных и информация об используемых сервисах.")}</p>
+        <p>{t("Перед публикацией замените этот текст на финальную юридическую редакцию.")}</p>
+        <a className="button button-primary" href={localeRoot}>{t("Вернуться к фильму")} <ArrowRight /></a>
       </div>
     </main>
   );
@@ -991,7 +1000,7 @@ function Site() {
 
   return (
     <>
-      <a className="skip-link" href="#hero">Перейти к содержанию</a>
+      <a className="skip-link" href="#hero">{t("Перейти к содержанию")}</a>
       <Header />
       <Filmstrip />
       <div className="cursor-glow" ref={cursorRef} aria-hidden="true" />
@@ -1018,7 +1027,12 @@ export default function App() {
   const resolvedPath = basePath && pathname.startsWith(basePath)
     ? pathname.slice(basePath.length) || "/"
     : pathname;
-  const path = resolvedPath.length > 1 ? resolvedPath.replace(/\/$/, "") : resolvedPath;
+  const normalizedPath = resolvedPath.length > 1 ? resolvedPath.replace(/\/$/, "") : resolvedPath;
+  const languageSegment = locale === "ru" ? "" : `/${locale}`;
+  const localizedPath = languageSegment && (normalizedPath === languageSegment || normalizedPath.startsWith(`${languageSegment}/`))
+    ? normalizedPath.slice(languageSegment.length) || "/"
+    : normalizedPath;
+  const path = localizedPath.length > 1 ? localizedPath.replace(/\/$/, "") : localizedPath;
   if (path === "/impressum") return <LegalPage type="impressum" />;
   if (path === "/datenschutz") return <LegalPage type="datenschutz" />;
   return <Site />;
