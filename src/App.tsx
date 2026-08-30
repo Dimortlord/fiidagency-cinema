@@ -209,12 +209,14 @@ const bonuses = [
   },
 ] as const;
 
-const theses = [
-  ["Подарите эмоцию, а не вещь", "Её невозможно положить в шкаф"],
-  ["Такого больше нет ни у кого", "Сюжет собран из вашей истории"],
-  ["Это пересматривают годами", "На годовщинах, с детьми, с родителями"],
-  ["Зал замолкает", "Проверено на живой свадьбе"],
-  ["Остаётся навсегда", "Файл ваш, без ограничений"],
+const showcaseEras = [
+  { start: 0.12, end: 2.12, period: "До нашей эры", title: "Каменный век", text: "История начинается у реки" },
+  { start: 2.44, end: 4.44, period: "1300 год до н. э.", title: "Древний Египет", text: "Встреча в древнем городе" },
+  { start: 4.76, end: 6.76, period: "Европа · 1187 год", title: "Средневековье", text: "Турнир и цветы после победы" },
+  { start: 7.08, end: 9.08, period: "Атлантика · 1912 год", title: "Эпоха лайнеров", text: "Ночная встреча на палубе" },
+  { start: 9.4, end: 11.4, period: "Европа · 1968 год", title: "Эпоха железных дорог", text: "Тот самый вокзал" },
+  { start: 11.72, end: 13.72, period: "Наши дни", title: "Венеция", text: "История продолжается сегодня" },
+  { start: 14.04, end: 16.2, period: "Финал истории", title: "Предложение", text: "Все эпохи вели к этому моменту" },
 ] as const;
 
 const faqs = [
@@ -728,11 +730,21 @@ function Works({ showcaseRef, videoRef }: {
           <div className="showcase-vignette" />
           <div className="showcase-status"><span /> {t("Семь эпох · 00:16")}</div>
         </div>
-        <div className="thesis-layer">
-          {theses.map(([title, text], index) => (
-            <article className={`thesis thesis-${index + 1}`} data-thesis key={title}>
-              <span>0{index + 1}</span><h3>{t(title)}</h3><p>{t(text)}</p>
+        <div className="thesis-layer" aria-live="polite">
+          {showcaseEras.map((era, index) => (
+            <article
+              className={`thesis thesis-${index + 1}${index === 0 ? " is-active" : ""}`}
+              data-era-card
+              aria-hidden={index === 0 ? "false" : "true"}
+              key={era.title}
+            >
+              <span>0{index + 1} · {t(era.period)}</span><h3>{t(era.title)}</h3><p>{t(era.text)}</p>
             </article>
+          ))}
+        </div>
+        <div className="showcase-era-progress" aria-hidden="true">
+          {showcaseEras.map((era, index) => (
+            <span className={index === 0 ? "is-active" : ""} data-era-dot key={era.title}><i />0{index + 1}</span>
           ))}
         </div>
         <div className="showcase-scroll"><ArrowDown /> {t("Листайте фильм")}</div>
@@ -1105,7 +1117,7 @@ function Site() {
       const lenis = activeLenis;
       const syncScrollTrigger = () => ScrollTrigger.update();
       lenis?.on("scroll", syncScrollTrigger);
-      let pendingVideoFrame = 0;
+      let segmentPlaybackFrame = 0;
 
       const context = gsap.context(() => {
         gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((element) => {
@@ -1153,41 +1165,94 @@ function Site() {
         const video = showcaseVideoRef.current;
         if (stage && video) {
           if (desktop) {
-            const cards = gsap.utils.toArray<HTMLElement>("[data-thesis]", stage);
+            const cards = gsap.utils.toArray<HTMLElement>("[data-era-card]", stage);
+            const dots = gsap.utils.toArray<HTMLElement>("[data-era-dot]", stage);
+            let activeEraIndex = 0;
+            let lastPlayedEraIndex = -1;
+
+            const stopSegmentPlayback = () => {
+              if (segmentPlaybackFrame) cancelAnimationFrame(segmentPlaybackFrame);
+              segmentPlaybackFrame = 0;
+              video.pause();
+            };
+
+            const activateEra = (nextIndex: number, shouldPlay: boolean) => {
+              const index = Math.max(0, Math.min(showcaseEras.length - 1, nextIndex));
+              if (index !== activeEraIndex) {
+                activeEraIndex = index;
+                cards.forEach((card, cardIndex) => {
+                  const isActive = cardIndex === index;
+                  card.classList.toggle("is-active", isActive);
+                  card.setAttribute("aria-hidden", isActive ? "false" : "true");
+                });
+                dots.forEach((dot, dotIndex) => dot.classList.toggle("is-active", dotIndex === index));
+              }
+
+              if (!shouldPlay || lastPlayedEraIndex === index) return;
+              lastPlayedEraIndex = index;
+              stopSegmentPlayback();
+              const era = showcaseEras[index];
+              const playSegment = () => {
+                if (activeEraIndex !== index) return;
+                video.currentTime = era.start;
+                void video.play().then(() => {
+                  const monitorSegment = () => {
+                    if (activeEraIndex !== index || video.currentTime >= era.end) {
+                      video.pause();
+                      segmentPlaybackFrame = 0;
+                      return;
+                    }
+                    segmentPlaybackFrame = requestAnimationFrame(monitorSegment);
+                  };
+                  segmentPlaybackFrame = requestAnimationFrame(monitorSegment);
+                }).catch(() => undefined);
+              };
+
+              if (video.readyState > 0) playSegment();
+              else {
+                video.preload = "metadata";
+                video.load();
+                video.addEventListener("loadedmetadata", playSegment, { once: true });
+              }
+            };
+
             if (video.readyState > 0) video.pause();
             else video.addEventListener("loadedmetadata", () => video.pause(), { once: true });
             const timeline = gsap.timeline({
               scrollTrigger: {
                 trigger: stage,
                 start: "top top",
-                end: "+=2800",
-                scrub: 0.42,
+                end: `+=${showcaseEras.length * 560}`,
+                scrub: 0.18,
                 pin: true,
                 onUpdate: (self) => {
-                  if (Number.isFinite(video.duration) && video.duration > 0) {
-                    const targetTime = Math.min(video.duration - 0.05, video.duration * self.progress);
-                    if (Math.abs(video.currentTime - targetTime) < 0.12 || video.seeking || pendingVideoFrame) return;
-                    pendingVideoFrame = requestAnimationFrame(() => {
-                      video.currentTime = targetTime;
-                      pendingVideoFrame = 0;
-                    });
+                  const eraIndex = Math.round(self.progress * (showcaseEras.length - 1));
+                  activateEra(eraIndex, self.isActive);
+                },
+                onToggle: (self) => {
+                  if (self.isActive) activateEra(activeEraIndex, true);
+                  else {
+                    stopSegmentPlayback();
+                    lastPlayedEraIndex = -1;
                   }
+                },
+                snap: {
+                  snapTo: 1 / (showcaseEras.length - 1),
+                  duration: { min: 0.16, max: 0.38 },
+                  delay: 0.08,
+                  ease: "power2.out",
                 },
               },
             });
             timeline.fromTo(".showcase-screen", { scale: 0.84, borderRadius: 28 }, { scale: 1, borderRadius: 0, duration: 0.55, ease: "power2.out" }, 0);
-            cards.forEach((card, index) => {
-              const fromX = index % 2 === 0 ? -70 : 70;
-              timeline.fromTo(card, { opacity: 0, x: fromX, y: 12, filter: "blur(8px)" }, { opacity: 1, x: 0, y: 0, filter: "blur(0px)", duration: 0.26 }, 0.4 + index * 0.55);
-              timeline.to(card, { opacity: 0, y: -28, duration: 0.2 }, 0.76 + index * 0.55);
-            });
+            timeline.to({}, { duration: showcaseEras.length - 1 }, 0.55);
           }
         }
 
         ScrollTrigger.refresh();
       });
       cleanup = () => {
-        if (pendingVideoFrame) cancelAnimationFrame(pendingVideoFrame);
+        if (segmentPlaybackFrame) cancelAnimationFrame(segmentPlaybackFrame);
         lenis?.off("scroll", syncScrollTrigger);
         context.revert();
       };
