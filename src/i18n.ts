@@ -258,3 +258,10 @@ export const languageLabels: Record<Locale, string> = {
   en: "EN",
   de: "DE",
 };
+
+export const nativeLanguageNames: Record<Locale, string> = {
+  ru: "Русский",
+  uk: "Українська",
+  en: "English",
+  de: "Deutsch",
+};

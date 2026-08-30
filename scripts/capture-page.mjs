@@ -77,7 +77,13 @@ async function connect() {
   await send("Page.navigate", { url: targetUrl });
   await sleep(4500);
 
-  if (section !== "hero") {
+  if (section === "language" || section === "menu") {
+    await send("Runtime.evaluate", {
+      expression: `document.querySelector(${JSON.stringify(section === "language" ? ".nav-language-trigger" : ".menu-button")})?.click();`,
+      awaitPromise: true,
+    });
+    await sleep(600);
+  } else if (section !== "hero") {
     await send("Runtime.evaluate", {
       expression: `document.getElementById(${JSON.stringify(section)})?.scrollIntoView({block:'start'}); window.dispatchEvent(new Event('scroll'));`,
       awaitPromise: true,

@@ -11,6 +11,7 @@ import {
   Image as ImageIcon,
   Lightbulb,
   ListChecks,
+  Languages,
   Mail,
   MapPin,
   Menu,
@@ -36,7 +37,7 @@ import {
   useState,
 } from "react";
 import { CONTACTS } from "./config/contacts";
-import { languageLabels, localeFromPath, localePrefix, locales, translate, type Locale } from "./i18n";
+import { languageLabels, localeFromPath, localePrefix, locales, nativeLanguageNames, translate, type Locale } from "./i18n";
 
 const baseUrl = import.meta.env.BASE_URL;
 const locale = localeFromPath(window.location.pathname);
@@ -201,18 +202,32 @@ function scrollToId(id: string) {
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const lastScroll = useRef(0);
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const [attached, setAttached] = useState(() => window.scrollY > 28);
+  const languageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onScroll = () => {
-      const current = window.scrollY;
-      setHidden(current > lastScroll.current && current > 120 && !menuOpen);
-      lastScroll.current = current;
-    };
+    const onScroll = () => setAttached(window.scrollY > 28);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [menuOpen]);
+  }, []);
+
+  useEffect(() => {
+    if (!languageOpen) return;
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (!languageRef.current?.contains(event.target as Node)) setLanguageOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setLanguageOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [languageOpen]);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
@@ -226,39 +241,77 @@ function Header() {
 
   const navigate = (id: string) => {
     setMenuOpen(false);
+    setLanguageOpen(false);
     window.setTimeout(() => scrollToId(id), 60);
   };
 
   return (
-    <header className={`site-header ${hidden ? "is-hidden" : ""}`}>
-      <div className="header-inner">
+    <>
+      <header className={`site-header ${attached ? "is-attached" : ""}`}>
+        <div className="header-inner">
           <button className="brand" onClick={() => navigate("hero")} aria-label={t("На первый экран")}>
-          <span className="brand-mark"><Film size={21} /></span>
-          <span>FIID <i>CINEMA</i></span>
-        </button>
-
-        <nav className="desktop-nav" aria-label={t("Главная навигация")}>
-          {navItems.map(([label, id]) => (
-            <button key={id} onClick={() => navigate(id)}>{t(label)}</button>
-          ))}
-        </nav>
-
-        <div className="header-actions">
-          <nav className="lang-switch" aria-label={t("Выбор языка")}>
-            {locales.map((item) => <a key={item} className={item === locale ? "active" : ""} href={languageUrl(item)} lang={item} hrefLang={item} aria-current={item === locale ? "page" : undefined}>{languageLabels[item]}</a>)}
-          </nav>
-          <button className="header-cta" onClick={() => navigate("contact")}>{t("Обсудить фильм")}</button>
-          <button
-            className="menu-button"
-            onClick={() => setMenuOpen((open) => !open)}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
-            aria-label={t(menuOpen ? "Закрыть меню" : "Открыть меню")}
-          >
-            {menuOpen ? <X /> : <Menu />}
+            <span className="brand-mark"><Film size={21} /></span>
+            <span>FIID <i>CINEMA</i></span>
           </button>
+
+          <nav className="desktop-nav" aria-label={t("Главная навигация")}>
+            {navItems.map(([label, id]) => (
+              <button key={id} onClick={() => navigate(id)}>{t(label)}</button>
+            ))}
+          </nav>
+
+          <div className="header-actions">
+            <div className={`nav-language ${languageOpen ? "is-open" : ""}`} ref={languageRef}>
+              <button
+                className="nav-language-trigger"
+                type="button"
+                aria-label={t("Выбор языка")}
+                aria-haspopup="menu"
+                aria-expanded={languageOpen}
+                aria-controls="language-menu"
+                onClick={() => {
+                  setLanguageOpen((open) => !open);
+                  setMenuOpen(false);
+                }}
+              >
+                <Languages size={15} aria-hidden="true" />
+                <span>{languageLabels[locale]}</span>
+                <ChevronDown size={14} aria-hidden="true" />
+              </button>
+              <nav id="language-menu" className="nav-language-menu" aria-label={t("Выбор языка")}>
+                <small>{t("Выбор языка")}</small>
+                {locales.map((item) => (
+                  <a
+                    key={item}
+                    className={item === locale ? "active" : ""}
+                    href={languageUrl(item)}
+                    lang={item}
+                    hrefLang={item}
+                    aria-current={item === locale ? "page" : undefined}
+                  >
+                    <span>{nativeLanguageNames[item]}</span>
+                    <b>{languageLabels[item]}</b>
+                    {item === locale ? <Check size={14} aria-hidden="true" /> : <i aria-hidden="true" />}
+                  </a>
+                ))}
+              </nav>
+            </div>
+            <button className="header-cta" onClick={() => navigate("contact")}>{t("Обсудить фильм")}</button>
+            <button
+              className="menu-button"
+              onClick={() => {
+                setMenuOpen((open) => !open);
+                setLanguageOpen(false);
+              }}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
+              aria-label={t(menuOpen ? "Закрыть меню" : "Открыть меню")}
+            >
+              {menuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
       <div id="mobile-menu" className={`mobile-menu ${menuOpen ? "is-open" : ""}`} aria-hidden={!menuOpen}>
         <div className="mobile-menu-inner">
@@ -268,13 +321,10 @@ function Header() {
               <span>0{index + 1}</span>{t(label)}<ArrowRight />
             </button>
           ))}
-          <div className="mobile-languages" aria-label={t("Выбор языка")}>
-            {locales.map((item) => <a key={item} className={item === locale ? "active" : ""} href={languageUrl(item)} lang={item} hrefLang={item} aria-current={item === locale ? "page" : undefined}>{languageLabels[item]}</a>)}
-          </div>
           <div className="mobile-menu-foot">{t("Ульм · работаем по всей Европе")}</div>
         </div>
       </div>
-    </header>
+    </>
   );
 }
 
