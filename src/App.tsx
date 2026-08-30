@@ -172,11 +172,48 @@ const processSteps = [
 ] as const;
 
 const bonuses = [
-  ["Вертикальная нарезка", "Для сторис и рилсов — уже в правильном формате.", Smartphone],
-  ["Кадр-постер", "В печатном качестве: можно поставить в рамку и повесить на стену.", ImageIcon],
-  ["QR-открытка", "Гость сканирует код и смотрит фильм с телефона.", QrCode],
-  ["Версия для большого экрана", "Собрана специально для показа в зале.", MonitorPlay],
-  ["Ваш файл навсегда", "Без водяных знаков и ограничений на количество просмотров.", TicketCheck],
+  {
+    title: "Вертикальная нарезка",
+    text: "Для сторис и рилсов — уже в правильном формате.",
+    Icon: Smartphone,
+    media: "video",
+    src: "/video/services/wedding.mp4",
+    poster: "/img/services/wedding.webp",
+    position: "48% center",
+  },
+  {
+    title: "Кадр-постер",
+    text: "В печатном качестве: можно поставить в рамку и повесить на стену.",
+    Icon: ImageIcon,
+    media: "image",
+    src: "/img/services/engagement.webp",
+    position: "center 42%",
+  },
+  {
+    title: "QR-открытка",
+    text: "Гость сканирует код и смотрит фильм с телефона.",
+    Icon: QrCode,
+    media: "image",
+    src: "/img/services/birthday.webp",
+    position: "center",
+  },
+  {
+    title: "Версия для большого экрана",
+    text: "Собрана специально для показа в зале.",
+    Icon: MonitorPlay,
+    media: "video",
+    src: "/video/services/parents.mp4",
+    poster: "/img/services/parents.webp",
+    position: "center",
+  },
+  {
+    title: "Ваш файл навсегда",
+    text: "Без водяных знаков и ограничений на количество просмотров.",
+    Icon: TicketCheck,
+    media: "image",
+    src: "/img/services/company.webp",
+    position: "center",
+  },
 ] as const;
 
 const theses = [
@@ -635,6 +672,7 @@ function Process({ processRef, trackRef }: {
 }
 
 function Bonuses() {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   return (
     <section id="bonuses" className="bonuses paper-section" aria-labelledby="bonuses-title">
       <div className="container">
@@ -643,11 +681,31 @@ function Bonuses() {
           <h2 id="bonuses-title">{t("Что вы получаете сверх фильма")}</h2>
         </div>
         <div className="bonus-grid">
-          {bonuses.map(([title, text, Icon], index) => (
-            <article className={`bonus-card tone-${index + 1}`} key={title} data-reveal>
-              <div className="bonus-icon"><Icon /></div>
-              <h3>{t(title)}</h3>
-              <p>{t(text)}</p>
+          {bonuses.map((bonus, index) => (
+            <article className={`bonus-card bonus-visual-${index + 1}`} key={bonus.title} data-reveal>
+              <div className={`bonus-media is-${bonus.media}`} aria-hidden="true">
+                {bonus.media === "video" ? (
+                  <video
+                    src={assetUrl(bonus.src)}
+                    poster={assetUrl(bonus.poster)}
+                    autoPlay={!reduceMotion}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    style={{ objectPosition: bonus.position }}
+                    tabIndex={-1}
+                  />
+                ) : (
+                  <img src={assetUrl(bonus.src)} alt="" loading="lazy" style={{ objectPosition: bonus.position }} />
+                )}
+              </div>
+              <div className="bonus-overlay" aria-hidden="true" />
+              <div className="bonus-content">
+                <div className="bonus-icon"><bonus.Icon /></div>
+                <h3>{t(bonus.title)}</h3>
+                <p>{t(bonus.text)}</p>
+              </div>
               <span>{t("Входит в фильм")}</span>
             </article>
           ))}
