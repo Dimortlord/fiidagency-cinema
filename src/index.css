@@ -2557,7 +2557,7 @@ h3 {
 .legal-page .button { margin-top: 24px; }
 
 /* Responsive */
-@media (min-width: 1024px) and (max-width: 1800px) {
+@media (min-width: 1024px) and (max-width: 2100px) {
   .projector { left: -154px; }
   .beam-back { left: 4px; }
 }
