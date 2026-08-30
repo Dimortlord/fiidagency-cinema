@@ -396,11 +396,12 @@ function Hero() {
         </div>
 
         <div className="hero-cinema">
-          <div className="beam" aria-hidden="true" />
+          <div className="beam beam-back" aria-hidden="true" />
           <div className="cinema-screen">
             <video ref={videoRef} autoPlay muted loop playsInline preload="metadata" poster={assetUrl("/img/hero-poster.webp")} aria-label={t("Фрагменты персональных мультфильмов")}>
               <source src={assetUrl("/video/hero-reel.mp4")} type="video/mp4" />
             </video>
+            <div className="screen-beam" aria-hidden="true" />
             <div className="screen-vignette" />
             <div className="screen-label"><span /> {t("Идёт показ")}</div>
           </div>
