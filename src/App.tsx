@@ -23,7 +23,6 @@ import {
   QrCode,
   Send,
   Smartphone,
-  Sparkles,
   TicketCheck,
   UserRound,
   X,
@@ -50,7 +49,7 @@ const languageUrl = (nextLocale: Locale) => `${baseUrl}${localePrefix(nextLocale
 
 const navItems = [
   ["История", "story"],
-  ["Форматы", "formats"],
+  ["Услуги", "formats"],
   ["Как это работает", "process"],
   ["Работы", "works"],
   ["FAQ", "faq"],
@@ -117,15 +116,50 @@ const occasions = [
   "Для компании",
 ];
 
-const occasionLines: Record<string, string> = {
-  Свадьба: "Премьера, после которой ваши гости ещё долго говорят не о торте.",
-  Помолвка: "Ваше предложение становится сценой, которую хочется пересматривать.",
-  "День рождения": "Главный герой получает собственное маленькое приключение.",
-  Годовщина: "Вся дорога от первого взгляда до сегодняшнего дня — в одном сюжете.",
-  Родителям: "Семейная история, которую можно смотреть всем поколением.",
-  "Новый год": "Тёплая зимняя история вместо ещё одного обычного поздравления.",
-  "Для компании": "Люди, события и характер команды — в формате настоящей премьеры.",
-};
+const serviceStories = [
+  {
+    name: "Свадебная история",
+    category: "Для двоих",
+    description: "Ваше знакомство, путь друг к другу и день свадьбы — как настоящее кино.",
+    video: "/video/services/wedding.mp4",
+    poster: "/img/services/wedding.webp",
+  },
+  {
+    name: "Предложение руки и сердца",
+    category: "Помолвка",
+    description: "Тот самый вопрос превращается в красивую сцену с вашим характером и деталями.",
+    video: "/video/services/engagement.mp4",
+    poster: "/img/services/engagement.webp",
+  },
+  {
+    name: "Детский день рождения",
+    category: "Для ребёнка",
+    description: "Именинник становится главным героем доброго приключения для всей семьи.",
+    video: "/video/services/birthday.mp4",
+    poster: "/img/services/birthday.webp",
+  },
+  {
+    name: "История для родителей",
+    category: "Семейный фильм",
+    description: "Годы вместе, важные воспоминания и слова, которые хочется сохранить навсегда.",
+    video: "/video/services/parents.mp4",
+    poster: "/img/services/parents.webp",
+  },
+  {
+    name: "Новогодняя сказка",
+    category: "Праздник",
+    description: "Тёплый зимний сюжет с близкими вместо ещё одного обычного поздравления.",
+    video: "/video/services/new-year.mp4",
+    poster: "/img/services/new-year.webp",
+  },
+  {
+    name: "Фильм о команде",
+    category: "Для компании",
+    description: "Люди, достижения и характер команды в формате яркой персональной премьеры.",
+    video: "/video/services/company.mp4",
+    poster: "/img/services/company.webp",
+  },
+] as const;
 
 const processSteps = [
   ["Заявка", "Вы пишете повод и дату", MessageCircle],
@@ -454,28 +488,69 @@ function Story() {
 }
 
 function Formats() {
-  const [occasion, setOccasion] = useState("Свадьба");
+  const [selectedService, setSelectedService] = useState(0);
+  const service = serviceStories[selectedService];
   return (
     <section id="formats" className="formats paper-section" aria-labelledby="formats-title">
       <div className="container">
         <div className="section-heading" data-reveal>
-          <p className="section-kicker">{t("Сцена 03 · Формат")}</p>
-          <h2 id="formats-title">{t("Какие мультфильмы я делаю")}</h2>
-          <p>{t("Выберите повод — хронометраж и сюжет подстроим под вашу историю.")}</p>
+          <p className="section-kicker">{t("Сцена 03 · Услуги")}</p>
+          <h2 id="formats-title">{t("Выберите, какой мультфильм будет вашим")}</h2>
+          <p>{t("Нажмите на историю — видеопример откроется сразу. Сюжет, героев и детали я соберу уже из вашей жизни.")}</p>
         </div>
 
-        <div className="occasion-tabs" role="tablist" aria-label={t("Повод для фильма")}>
-          {occasions.map((item) => (
+        <div className="service-picker" data-reveal>
+          <div className="service-list" role="tablist" aria-label={t("Выберите тип мультфильма")}>
+            {serviceStories.map((item, index) => (
             <button
-              key={item}
+              key={item.name}
               role="tab"
-              aria-selected={occasion === item}
-              className={occasion === item ? "active" : ""}
-              onClick={() => setOccasion(item)}
-            >{t(item)}</button>
-          ))}
+              aria-selected={selectedService === index}
+              aria-controls="service-video"
+              className={selectedService === index ? "active" : ""}
+              onClick={() => setSelectedService(index)}
+            >
+              <span className="service-number">{String(index + 1).padStart(2, "0")}</span>
+              <span className="service-option-copy">
+                <small>{t(item.category)}</small>
+                <strong>{t(item.name)}</strong>
+              </span>
+              <ArrowRight size={19} />
+            </button>
+            ))}
+          </div>
+
+          <div className="service-preview" id="service-video" role="tabpanel" key={service.name}>
+            <video
+              src={assetUrl(service.video)}
+              poster={assetUrl(service.poster)}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-label={`${t("Видеопример")}: ${t(service.name)}`}
+            />
+            <div className="service-preview-top">
+              <span><i /> {t("Видеопример")}</span>
+              <span>{String(selectedService + 1).padStart(2, "0")} / {String(serviceStories.length).padStart(2, "0")}</span>
+            </div>
+            <div className="service-preview-copy">
+              <small>{t(service.category)}</small>
+              <h3>{t(service.name)}</h3>
+              <p>{t(service.description)}</p>
+              <button className="service-select" onClick={() => scrollToId("contact")}>
+                {t("Хочу такую историю")} <ArrowRight size={18} />
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="occasion-note" key={occasion}><Sparkles size={18} /> {t(occasionLines[occasion])}</div>
+
+        <div className="format-subheading" data-reveal>
+          <span>{t("Следующий шаг")}</span>
+          <h3>{t("Выберите хронометраж")}</h3>
+          <p>{t("Любую из историй выше можно сделать короткой открыткой или полноценным фильмом.")}</p>
+        </div>
 
         <div className="price-grid">
           {formats.map((format) => (
