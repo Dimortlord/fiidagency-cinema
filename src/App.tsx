@@ -591,7 +591,7 @@ function Process({ processRef, trackRef }: {
         <div className="process-viewport">
           <div className="process-track" ref={trackRef}>
             {processSteps.map(([title, text, Icon], index) => (
-              <article className="process-card" key={title}>
+              <article className={`process-card ${index === 0 ? "is-active" : ""}`} key={title} data-process-card>
                 <div className="step-number">{String(index + 1).padStart(2, "0")}</div>
                 <div className="step-icon"><Icon /></div>
                 <h3>{t(title)}</h3>
@@ -1059,10 +1059,20 @@ function Site() {
         const process = processRef.current;
         const track = trackRef.current;
         if (desktop && process && track) {
+          const processCards = gsap.utils.toArray<HTMLElement>("[data-process-card]", track);
           const horizontalDistance = () => Math.max(0, track.scrollWidth - window.innerWidth + 96);
+          const updateActiveProcessCard = () => {
+            if (!processCards.length) return;
+            const distance = horizontalDistance();
+            const trackX = Number(gsap.getProperty(track, "x")) || 0;
+            const progress = distance > 0 ? Math.min(1, Math.max(0, -trackX / distance)) : 0;
+            const activeIndex = Math.round(progress * (processCards.length - 1));
+            processCards.forEach((card, index) => card.classList.toggle("is-active", index === activeIndex));
+          };
           gsap.to(track, {
             x: () => -horizontalDistance(),
             ease: "none",
+            onUpdate: updateActiveProcessCard,
             scrollTrigger: {
               trigger: process,
               start: "top top",
@@ -1070,8 +1080,10 @@ function Site() {
               scrub: 0.45,
               pin: true,
               invalidateOnRefresh: true,
+              onRefresh: updateActiveProcessCard,
             },
           });
+          updateActiveProcessCard();
         }
 
         const stage = showcaseRef.current;
