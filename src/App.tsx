@@ -725,7 +725,7 @@ function Works({ showcaseRef, videoRef }: {
           <h2 id="works-title">{t("Вот как выглядит ваша премьера")}</h2>
         </div>
         <div className="showcase-screen">
-          <video ref={videoRef} muted loop playsInline preload="none" poster={assetUrl("/img/frames/01.webp")} aria-label={t("Нарезка фильма через эпохи")}>
+          <video ref={videoRef} muted loop playsInline preload="none" poster={assetUrl("/img/showcase-medieval-poster.webp")} aria-label={t("Нарезка фильма через эпохи")}>
               <source src={`${assetUrl("/video/epochs-montage.mp4")}?v=3`} type="video/mp4" />
           </video>
           <div className="showcase-vignette" />
