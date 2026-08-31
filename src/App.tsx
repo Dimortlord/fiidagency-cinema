@@ -7,7 +7,6 @@ import {
   Clapperboard,
   Clock3,
   Film,
-  Frame,
   Image as ImageIcon,
   Lightbulb,
   ListChecks,
@@ -68,6 +67,11 @@ const galleryFrames = Array.from({ length: 8 }, (_, index) => ({
     "Ужин у моря на закате",
     "Предложение руки и сердца",
   ][index],
+}));
+
+const corridorFrames = galleryFrames.map((frame, index) => ({
+  ...frame,
+  sourceIndex: index,
 }));
 
 const formats = [
@@ -737,18 +741,34 @@ function Works({ showcaseRef, videoRef }: {
         <div className="showcase-scroll"><ArrowDown /> {t("Листайте фильм")}</div>
       </div>
 
-      <div className="container gallery-block">
-        <div className="gallery-heading" data-reveal>
-          <div><p className="section-kicker light">{t("Стоп-кадры")}</p><h3>{t("Одна история. Восемь миров.")}</h3></div>
-          <p>{t("Нажмите на кадр, чтобы рассмотреть детали.")}</p>
-        </div>
-        <div className="gallery-grid">
-          {galleryFrames.map((frame, index) => (
-            <button key={frame.src} onClick={() => setLightbox(index)} aria-label={`${t("Открыть кадр")} ${index + 1}`}>
-              <img src={frame.src} alt={t(frame.alt)} width="1200" height="675" loading="lazy" />
-              <span>0{index + 1} <Frame size={18} /></span>
-            </button>
-          ))}
+      <div className="gallery-corridor" data-gallery-corridor>
+        <div className="gallery-corridor-stage" data-gallery-stage>
+          <div className="gallery-corridor-beam" aria-hidden="true" />
+          <div className="gallery-corridor-scene" data-gallery-scene>
+            {corridorFrames.map((frame, index) => (
+              <button
+                className="corridor-frame"
+                data-corridor-frame
+                key={`${frame.src}-${index}`}
+                onClick={() => setLightbox(frame.sourceIndex)}
+                aria-label={`${t("Открыть кадр")} ${frame.sourceIndex + 1}`}
+              >
+                <img src={frame.src} alt={t(frame.alt)} width="1200" height="675" loading="lazy" />
+              </button>
+            ))}
+          </div>
+          <div className="gallery-corridor-grain" aria-hidden="true" />
+          <div className="gallery-corridor-vignette" aria-hidden="true" />
+          <div className="gallery-corridor-heading">
+            <p className="section-kicker light">{t("Стоп-кадры")}</p>
+            <h3>{t("Одна история. Восемь миров.")}</h3>
+          </div>
+          <div className="gallery-corridor-hud" aria-hidden="true">
+            <strong data-gallery-current>01</strong>
+            <span>{t("кадр")}<br />{t("из")} {corridorFrames.length}</span>
+            <i><b data-gallery-progress /></i>
+          </div>
+          <p className="gallery-corridor-caption">{t("Нажмите на кадр, чтобы рассмотреть детали.")}</p>
         </div>
       </div>
 
@@ -1175,6 +1195,72 @@ function Site() {
               timeline.to(card, { opacity: 0, y: -28, duration: 0.2 }, start + 0.48);
             });
           }
+        }
+
+        const galleryCorridor = document.querySelector<HTMLElement>("[data-gallery-corridor]");
+        const galleryScene = document.querySelector<HTMLElement>("[data-gallery-scene]");
+        const staticGallery = window.matchMedia("(max-width: 767px), (prefers-reduced-motion: reduce)").matches;
+        if (galleryCorridor && galleryScene && !staticGallery) {
+          const frames = gsap.utils.toArray<HTMLElement>("[data-corridor-frame]", galleryScene);
+          const current = galleryCorridor.querySelector<HTMLElement>("[data-gallery-current]");
+          const progressBar = galleryCorridor.querySelector<HTMLElement>("[data-gallery-progress]");
+          const near = 380;
+          const far = -8200;
+          let depth = 0;
+          let frameLayout: Array<{ x: number; y: number; z: number; rotateX: number; rotateY: number }> = [];
+
+          const updateLayout = () => {
+            const spacing = window.innerWidth < 1024 ? 620 : 800;
+            const radiusScale = window.innerWidth < 1100 ? 0.72 : 1;
+            depth = frames.length * spacing + 600;
+            frameLayout = frames.map((_, index) => {
+              const angle = index * 2.399963;
+              const radius = (250 + (index % 3) * 95) * radiusScale;
+              const x = Math.cos(angle) * radius;
+              const y = Math.sin(angle) * radius * 0.55;
+              return {
+                x,
+                y,
+                z: -(index + 1) * spacing,
+                rotateY: x > 0 ? -11 : 11,
+                rotateX: y > 0 ? 5 : -5,
+              };
+            });
+          };
+
+          const renderCorridor = (progress: number) => {
+            const camera = progress * depth;
+            frames.forEach((frame, index) => {
+              const layout = frameLayout[index];
+              const z = layout.z + camera;
+              let opacity = 0;
+              if (z < near && z > far) {
+                const fadeIn = Math.min(1, (z - far) / 2600);
+                const fadeOut = z > near - 700 ? Math.max(0, (near - z) / 700) : 1;
+                opacity = fadeIn * fadeOut;
+              }
+              frame.style.opacity = opacity.toFixed(3);
+              frame.style.pointerEvents = opacity > 0.42 && z > -1450 ? "auto" : "none";
+              frame.style.transform = `translate3d(${layout.x.toFixed(1)}px, ${layout.y.toFixed(1)}px, ${z.toFixed(1)}px) rotateY(${layout.rotateY}deg) rotateX(${layout.rotateX}deg)`;
+            });
+            const activeIndex = Math.min(frames.length, Math.floor(progress * frames.length) + 1);
+            if (current) current.textContent = String(activeIndex).padStart(2, "0");
+            if (progressBar) progressBar.style.width = `${progress * 100}%`;
+          };
+
+          updateLayout();
+          renderCorridor(0);
+          ScrollTrigger.create({
+            trigger: galleryCorridor,
+            start: "top top",
+            end: "bottom bottom",
+            invalidateOnRefresh: true,
+            onUpdate: (self) => renderCorridor(self.progress),
+            onRefresh: (self) => {
+              updateLayout();
+              renderCorridor(self.progress);
+            },
+          });
         }
 
         ScrollTrigger.refresh();

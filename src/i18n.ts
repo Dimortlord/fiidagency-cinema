@@ -140,6 +140,8 @@ const rows: TranslationRow[] = [
   ["Стоп-кадры", "Стоп-кадри", "Film stills", "Standbilder"],
   ["Одна история. Восемь миров.", "Одна історія. Вісім світів.", "One story. Eight worlds.", "Eine Geschichte. Acht Welten."],
   ["Нажмите на кадр, чтобы рассмотреть детали.", "Натисніть на кадр, щоб роздивитися деталі.", "Select a frame to see the details.", "Klicken Sie auf ein Bild, um die Details zu sehen."],
+  ["кадр", "кадр", "frame", "Bild"],
+  ["из", "із", "of", "von"],
   ["Первый показ · август 2026", "Перший показ · серпень 2026", "First screening · August 2026", "Erste Vorführung · August 2026"],
   ["Сцена 07 · Честно", "Сцена 07 · Відверто", "Scene 07 · Honestly", "Szene 07 · Ehrlich"],
   ["Пока отзывов нет — есть кое-что лучше", "Поки відгуків немає — є дещо краще", "No reviews yet — but something better", "Noch keine Bewertungen – dafür etwas Besseres"],
