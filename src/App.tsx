@@ -827,25 +827,29 @@ function FilmPlayer() {
       <button onClick={toggle} aria-label={t(playing ? "Поставить на паузу" : "Продолжить просмотр")}>
         {playing ? <Pause fill="currentColor" /> : <Play fill="currentColor" />}
       </button>
-      <figcaption><span /> {t("Первый показ · август 2026")}</figcaption>
+      <figcaption><span /> {t("Премьера в замке · Нейфен, август 2026")}</figcaption>
     </figure>
   );
 }
 
 function Trust() {
-  const placesLeft = 10;
   return (
     <section id="trust" className="trust paper-section" aria-labelledby="trust-title">
       <div className="container trust-grid">
         <FilmPlayer />
         <div className="trust-copy" data-reveal>
-          <p className="section-kicker">{t("Сцена 07 · Честно")}</p>
-          <h2 id="trust-title">{t("Пока отзывов нет — есть кое-что лучше")}</h2>
-          <p>{t("Я начал делать это недавно и сейчас собираю первые работы. Поэтому первым десяти клиентам — цена ниже и максимум внимания к деталям.")}</p>
-          <p>{t("Взамен прошу разрешение показать готовый фильм в портфолио. Если история личная и показывать её нельзя — тоже нормально, просто скажите.")}</p>
+          <p className="section-kicker">{t("Сцена 07 · Личное доказательство")}</p>
+          <h2 id="trust-title">{t("Лучший отзыв — фильм, который я сделал для себя")}</h2>
+          <p>{t("Около 40 часов я собирал этот фильм для нашей свадьбы, продумывая каждую сцену и каждую деталь.")}</p>
+          <p>{t("Премьера была на дорогой свадьбе в замке в Нейфене — перед всеми гостями. Права на ошибку не было: всё должно было сработать с первого кадра.")}</p>
+          <p>{t("Теперь каждый фильм для клиентов я делаю с тем же вниманием и качеством, как если бы снова делал его для себя.")}</p>
+          <div className="trust-proof" aria-label={t("Три факта о первом фильме")}>
+            <span><b>≈ 40</b>{t("часов работы")}</span>
+            <span><b>{t("Замок")}</b>{t("премьера в Нейфене")}</span>
+            <span><b>{t("Как для себя")}</b>{t("так делаю для вас")}</span>
+          </div>
           <div className="trust-actions">
-            <button className="button button-primary" onClick={() => scrollToId("contact")}>{t("Войти в первую десятку")} <ArrowRight size={19} /></button>
-            <span className="places"><i /> {t("Осталось мест:")} <b>{placesLeft}</b></span>
+            <button className="button button-primary" onClick={() => scrollToId("contact")}>{t("Хочу фильм с таким подходом")} <ArrowRight size={19} /></button>
           </div>
         </div>
       </div>

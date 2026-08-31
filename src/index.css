@@ -2483,7 +2483,37 @@ h3 {
 }
 
 .trust-copy > p:not(.section-kicker) {
+  max-width: 650px;
   color: rgba(27, 16, 51, 0.7);
+}
+
+.trust-proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.trust-proof span {
+  display: flex;
+  min-height: 92px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(27, 16, 51, 0.13);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.42);
+  color: rgba(27, 16, 51, 0.58);
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.trust-proof b {
+  color: var(--night);
+  font-family: var(--display);
+  font-size: clamp(1rem, 1.3vw, 1.3rem);
+  line-height: 1;
 }
 
 .trust-actions {
@@ -2491,7 +2521,7 @@ h3 {
   flex-wrap: wrap;
   align-items: center;
   gap: 14px;
-  margin-top: 32px;
+  margin-top: 24px;
 }
 
 .places {
@@ -3193,6 +3223,8 @@ h3 {
   .lightbox-arrow.prev { left: calc(50% - 58px); }
   .lightbox-arrow.next { right: calc(50% - 58px); }
   .first-film video { aspect-ratio: 16 / 11; }
+  .trust-proof { grid-template-columns: 1fr; }
+  .trust-proof span { min-height: 0; flex-direction: row; align-items: center; }
   .idea { padding: 88px 0 100px; }
   .idea-grid { grid-template-columns: 1fr; gap: 35px; }
   .idea-character { order: 2; height: 320px; overflow: hidden; }
