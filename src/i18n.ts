@@ -135,7 +135,7 @@ const rows: TranslationRow[] = [
   ["Сцена 06 · Большой экран", "Сцена 06 · Великий екран", "Scene 06 · Big screen", "Szene 06 · Große Leinwand"],
   ["Вот как выглядит ваша премьера", "Ось як виглядає ваша прем’єра", "This is what your premiere looks like", "So sieht Ihre Premiere aus"],
   ["Фрагмент фильма · 00:24", "Фрагмент фільму · 00:24", "Film excerpt · 00:24", "Filmausschnitt · 00:24"],
-  ["Семь эпох · 00:41", "Сім епох · 00:41", "Seven eras · 00:41", "Sieben Epochen · 00:41"],
+  ["Семь эпох · 00:29", "Сім епох · 00:29", "Seven eras · 00:29", "Sieben Epochen · 00:29"],
   ["Листайте фильм", "Гортайте фільм", "Scroll through the film", "Durch den Film scrollen"],
   ["Стоп-кадры", "Стоп-кадри", "Film stills", "Standbilder"],
   ["Одна история. Восемь миров.", "Одна історія. Вісім світів.", "One story. Eight worlds.", "Eine Geschichte. Acht Welten."],

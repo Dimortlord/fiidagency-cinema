@@ -726,10 +726,10 @@ function Works({ showcaseRef, videoRef }: {
         </div>
         <div className="showcase-screen">
           <video ref={videoRef} muted loop playsInline preload="none" poster={assetUrl("/img/frames/01.webp")} aria-label={t("Нарезка фильма через эпохи")}>
-              <source src={`${assetUrl("/video/epochs-montage.mp4")}?v=2`} type="video/mp4" />
+              <source src={`${assetUrl("/video/epochs-montage.mp4")}?v=3`} type="video/mp4" />
           </video>
           <div className="showcase-vignette" />
-          <div className="showcase-status"><span /> {t("Семь эпох · 00:41")}</div>
+          <div className="showcase-status"><span /> {t("Семь эпох · 00:29")}</div>
         </div>
         <div className="thesis-layer">
           {theses.map(([title, text], index) => (
