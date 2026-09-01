@@ -523,8 +523,7 @@ function Story() {
       <div className="light-patch light-patch-one" aria-hidden="true" />
       <div className="container story-grid">
         <figure className="author-photo" data-reveal>
-          {/* TODO: заменить на реальное фото Дмитрия. */}
-          <img src={assetUrl("/img/author-real.jpg")} alt={t("Место для реального портрета Дмитрия")} width="1000" height="1250" loading="lazy" />
+          <img src={assetUrl("/img/author-real.jpg")} alt={t("Дмитрий в день своей свадьбы")} width="1000" height="1250" loading="lazy" />
           <figcaption><Clapperboard size={17} /> {t("Ночной монтаж перед свадьбой")}</figcaption>
         </figure>
         <div className="story-copy" data-reveal>
@@ -762,6 +761,7 @@ function Works({ showcaseRef, videoRef }: {
           <div className="gallery-corridor-heading">
             <p className="section-kicker light">{t("Стоп-кадры")}</p>
             <h3>{t("Одна история. Восемь миров.")}</h3>
+            <p className="gallery-corridor-lead">{t("Это миры из нашей истории. Для вас я нарисую любой — эпоху, планету, вашу собственную сказку.")}</p>
           </div>
           <div className="gallery-corridor-hud" aria-hidden="true">
             <strong data-gallery-current>01</strong>
@@ -1219,7 +1219,7 @@ function Site() {
             depth = frames.length * spacing + 600;
             frameLayout = frames.map((_, index) => {
               const angle = index * 2.399963;
-              const radius = (250 + (index % 3) * 95) * radiusScale;
+              const radius = (310 + (index % 3) * 118) * radiusScale;
               const x = Math.cos(angle) * radius;
               const y = Math.sin(angle) * radius * 0.55;
               return {
