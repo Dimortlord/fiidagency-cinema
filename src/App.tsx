@@ -16,7 +16,6 @@ import {
   Menu,
   MessageCircle,
   MonitorPlay,
-  Pause,
   PenLine,
   Play,
   QrCode,
@@ -788,46 +787,12 @@ function Works({ showcaseRef, videoRef }: {
 }
 
 function FilmPlayer() {
-  const figureRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
-
-  useEffect(() => {
-    const figure = figureRef.current;
-    const video = videoRef.current;
-    if (!figure || !video) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const observer = new IntersectionObserver((entries) => {
-      if (!entries[0].isIntersecting) return;
-      video.preload = "metadata";
-      video.load();
-      if (!reduced) void video.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
-      observer.disconnect();
-    }, { rootMargin: "100% 0px" });
-    observer.observe(figure);
-    return () => observer.disconnect();
-  }, []);
-
-  const toggle = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      void video.play();
-      setPlaying(true);
-    } else {
-      video.pause();
-      setPlaying(false);
-    }
-  };
   return (
-    <figure className="first-film" ref={figureRef} data-reveal>
-      <video ref={videoRef} muted loop playsInline preload="none" poster={assetUrl("/img/frames/01.webp")} aria-label={t("Фрагмент первого свадебного мультфильма")}>
-        <source src={assetUrl("/video/first-film.mp4")} type="video/mp4" />
+    <figure className="first-film" data-reveal>
+      <video controls playsInline preload="metadata" poster={assetUrl("/img/frames/01.webp")} aria-label={t("Полный свадебный мультфильм")}>
+        <source src={assetUrl("/video/full-wedding-film.mp4")} type="video/mp4" />
       </video>
-      <button onClick={toggle} aria-label={t(playing ? "Поставить на паузу" : "Продолжить просмотр")}>
-        {playing ? <Pause fill="currentColor" /> : <Play fill="currentColor" />}
-      </button>
-      <figcaption><span /> {t("Премьера в замке · Нейфен, август 2026")}</figcaption>
+      <figcaption><span /> {t("Полный фильм · 07:28 · Премьера в замке")}</figcaption>
     </figure>
   );
 }
@@ -839,7 +804,7 @@ function Trust() {
         <FilmPlayer />
         <div className="trust-copy" data-reveal>
           <p className="section-kicker">{t("Сцена 07 · Личное доказательство")}</p>
-          <h2 id="trust-title">{t("Лучший отзыв — фильм, который я сделал для себя")}</h2>
+          <h2 id="trust-title">{t("Мой фильм — мой главный отзыв")}</h2>
           <p>{t("Около 40 часов я собирал этот фильм для нашей свадьбы, продумывая каждую сцену и каждую деталь.")}</p>
           <p>{t("Премьера была на дорогой свадьбе в замке в Нейфене — перед всеми гостями. Права на ошибку не было: всё должно было сработать с первого кадра.")}</p>
           <p>{t("Теперь каждый фильм для клиентов я делаю с тем же вниманием и качеством, как если бы снова делал его для себя.")}</p>
