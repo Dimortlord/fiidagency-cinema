@@ -822,23 +822,109 @@ function Trust() {
   );
 }
 
-function Idea() {
+type IdeaDraft = { id: number; occasion: string; story: string };
+
+const ideaChoices = {
+  occasion: ["Свадьба", "День рождения", "Годовщина", "Для компании"],
+  mood: ["Трогательно", "Романтично", "С юмором", "Эпично"],
+  world: ["Наша реальность", "Сказка", "Сквозь эпохи", "Другая планета"],
+} as const;
+
+type IdeaChoice = {
+  occasion: (typeof ideaChoices.occasion)[number];
+  mood: (typeof ideaChoices.mood)[number];
+  world: (typeof ideaChoices.world)[number];
+};
+
+function Idea({ onComplete }: { onComplete: (draft: IdeaDraft) => void }) {
+  const [choice, setChoice] = useState<IdeaChoice>({
+    occasion: ideaChoices.occasion[0],
+    mood: ideaChoices.mood[0],
+    world: ideaChoices.world[2],
+  });
+  const assemblyKey = `${choice.occasion}-${choice.mood}-${choice.world}`;
+
+  const completeIdea = () => {
+    onComplete({
+      id: Date.now(),
+      occasion: choice.occasion,
+      story: `${t("Идея из конструктора:")} ${t(choice.occasion)} · ${t(choice.mood)} · ${t(choice.world)}.`,
+    });
+  };
+
   return (
     <section id="idea" className="idea night-section" aria-labelledby="idea-title">
       <div className="idea-beam" aria-hidden="true" />
-      <div className="container idea-grid">
-        <div className="idea-character" data-reveal>
-          <div className="bulb"><Lightbulb /></div>
-          <img src={assetUrl("/img/people/dmitriy.webp")} alt={t("Персонаж придумывает новую историю")} width="680" height="1052" loading="lazy" />
-          <div className="idea-bubbles"><i /><i /><i /></div>
+      <div className="container">
+        <div className="idea-heading" data-reveal>
+          <div>
+            <p className="section-kicker light">{t("Сцена 08 · Конструктор идеи")}</p>
+            <h2 id="idea-title">{t("Соберите идею своего фильма")}</h2>
+          </div>
+          <p>{t("Выберите три детали. Я соединю их с вашей настоящей историей и превращу в сюжет, которого больше ни у кого не будет.")}</p>
         </div>
-        <div className="idea-copy" data-reveal>
-          <p className="section-kicker light">{t("Сцена 08 · Без рамок")}</p>
-          <h2 id="idea-title">{t("У вас своя идея?")}</h2>
-          <p>{t("Не обязательно выбирать из готовых форматов. Расскажите, что придумали — и я скажу, как это сделать и сколько будет стоить. Даже если идея кажется странной. Особенно если кажется странной.")}</p>
-          <div className="button-row">
-            {CONTACTS.whatsapp && <a className="button button-primary" href={CONTACTS.whatsapp}>{t("Написать лично")} <MessageCircle size={19} /></a>}
-            <button className="button button-outline" onClick={() => scrollToId("contact")}>{t("Заполнить бриф")} <PenLine size={18} /></button>
+
+        <div className="idea-builder" data-reveal>
+          <div className="idea-controls">
+            <fieldset>
+              <legend><span>01</span>{t("Повод")}</legend>
+              <div>
+                {ideaChoices.occasion.map((item) => (
+                  <button type="button" className={choice.occasion === item ? "active" : ""} aria-pressed={choice.occasion === item} key={item} onClick={() => setChoice((current) => ({ ...current, occasion: item }))}>{t(item)}</button>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend><span>02</span>{t("Настроение")}</legend>
+              <div>
+                {ideaChoices.mood.map((item) => (
+                  <button type="button" className={choice.mood === item ? "active" : ""} aria-pressed={choice.mood === item} key={item} onClick={() => setChoice((current) => ({ ...current, mood: item }))}>{t(item)}</button>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend><span>03</span>{t("Мир истории")}</legend>
+              <div>
+                {ideaChoices.world.map((item) => (
+                  <button type="button" className={choice.world === item ? "active" : ""} aria-pressed={choice.world === item} key={item} onClick={() => setChoice((current) => ({ ...current, world: item }))}>{t(item)}</button>
+                ))}
+              </div>
+            </fieldset>
+          </div>
+
+          <div className="idea-assembly">
+            <div className="idea-formula" key={assemblyKey} aria-live="polite">
+              <div className="idea-ingredient ingredient-occasion">
+                <TicketCheck />
+                <span>{t("Повод")}</span>
+                <b>{t(choice.occasion)}</b>
+              </div>
+              <div className="idea-ingredient ingredient-mood">
+                <AudioLines />
+                <span>{t("Настроение")}</span>
+                <b>{t(choice.mood)}</b>
+              </div>
+              <div className="idea-ingredient ingredient-world">
+                <ImageIcon />
+                <span>{t("Мир истории")}</span>
+                <b>{t(choice.world)}</b>
+              </div>
+              <svg className="idea-connections" viewBox="0 0 600 400" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M155 95 C260 95 265 200 385 240" />
+                <path d="M445 95 C390 120 420 180 385 240" />
+                <path d="M160 310 C245 310 285 250 385 240" />
+              </svg>
+              <div className="idea-core">
+                <div><Lightbulb /></div>
+                <span>{t("Ваша идея собрана")}</span>
+                <b>{t("Осталось превратить её в фильм")}</b>
+              </div>
+              <i className="idea-spark spark-one" aria-hidden="true" />
+              <i className="idea-spark spark-two" aria-hidden="true" />
+              <i className="idea-spark spark-three" aria-hidden="true" />
+            </div>
+            <button className="button button-primary idea-submit" type="button" onClick={completeIdea}>{t("Передать идею в бриф")} <ArrowRight size={19} /></button>
+            <p>{t("Ваш выбор автоматически появится в заявке")}</p>
           </div>
         </div>
       </div>
@@ -877,10 +963,17 @@ function FAQ() {
 
 type FormFields = { name: string; contact: string; occasion: string; date: string; story: string };
 
-function Contact() {
+function Contact({ ideaDraft }: { ideaDraft: IdeaDraft | null }) {
   const [fields, setFields] = useState<FormFields>({ name: "", contact: "", occasion: "Свадьба", date: "", story: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof FormFields, string>>>({});
   const [sent, setSent] = useState(false);
+
+  useEffect(() => {
+    if (!ideaDraft) return;
+    setFields((current) => ({ ...current, occasion: ideaDraft.occasion, story: ideaDraft.story }));
+    setErrors((current) => ({ ...current, story: undefined }));
+    setSent(false);
+  }, [ideaDraft]);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -1025,6 +1118,12 @@ function Site() {
   const showcaseRef = useRef<HTMLDivElement>(null);
   const showcaseVideoRef = useRef<HTMLVideoElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
+  const [ideaDraft, setIdeaDraft] = useState<IdeaDraft | null>(null);
+
+  const useIdeaDraft = (draft: IdeaDraft) => {
+    setIdeaDraft(draft);
+    requestAnimationFrame(() => scrollToId("contact"));
+  };
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1261,9 +1360,9 @@ function Site() {
         <Bonuses />
         <Works showcaseRef={showcaseRef} videoRef={showcaseVideoRef} />
         <Trust />
-        <Idea />
+        <Idea onComplete={useIdeaDraft} />
         <FAQ />
-        <Contact />
+        <Contact ideaDraft={ideaDraft} />
       </main>
       <Footer />
     </>
