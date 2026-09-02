@@ -119,7 +119,7 @@ const runtimeExamples = [
     poster: "/img/runtime-short.webp",
   },
   {
-    duration: "01:15",
+    duration: "01:46",
     kind: "Мини-фильм",
     title: "История с развитием",
     description: "Несколько сцен, узнаваемые герои и маленький законченный сюжет.",
