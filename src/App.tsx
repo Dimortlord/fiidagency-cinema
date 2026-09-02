@@ -914,9 +914,9 @@ function AuthorCaseVisual() {
         <div className={`author-case-frame frame-${index + 1}`} key={frame.src}>
           <img src={frame.src} alt={t(frame.alt)} loading={index === 0 ? "eager" : "lazy"} />
           <span>0{index + 1}</span>
+          {index === 0 && <figcaption><Clapperboard size={18} /> {t("Премьера в замке · Нейфен")}</figcaption>}
         </div>
       ))}
-      <figcaption><Clapperboard size={18} /> {t("Премьера в замке · Нейфен")}</figcaption>
     </figure>
   );
 }
