@@ -155,6 +155,7 @@ const rows: TranslationRow[] = [
   ["из", "із", "of", "von"],
   ["Полный фильм · 07:28 · Премьера в замке", "Повний фільм · 07:28 · Прем’єра в замку", "Full film · 07:28 · Castle premiere", "Vollständiger Film · 07:28 · Premiere im Schloss"],
   ["Кадры первого свадебного фильма", "Кадри першого весільного фільму", "Frames from the first wedding film", "Bilder aus dem ersten Hochzeitsfilm"],
+  ["Гости смотрят свадебный мультфильм на премьере", "Гості дивляться весільний мультфільм на прем’єрі", "Guests watch the wedding animated film at its premiere", "Gäste sehen den Hochzeitsanimationsfilm bei der Premiere"],
   ["Премьера в замке · Нейфен", "Прем’єра в замку · Нойффен", "Castle premiere · Neuffen", "Premiere im Schloss · Neuffen"],
   ["Сцена 07 · Первый кейс", "Сцена 07 · Перший кейс", "Scene 07 · The first case", "Szene 07 · Das erste Projekt"],
   ["Сначала я сделал это для себя", "Спочатку я зробив це для себе", "First, I made it for myself", "Zuerst machte ich es für mich selbst"],

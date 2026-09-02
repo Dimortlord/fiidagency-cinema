@@ -907,16 +907,19 @@ function Works({ showcaseRef, videoRef }: {
 }
 
 function AuthorCaseVisual() {
-  const caseFrames = [galleryFrames[0], galleryFrames[5], galleryFrames[7]];
   return (
-    <figure className="author-case-visual" data-reveal aria-label={t("Кадры первого свадебного фильма")}>
-      {caseFrames.map((frame, index) => (
-        <div className={`author-case-frame frame-${index + 1}`} key={frame.src}>
-          <img src={frame.src} alt={t(frame.alt)} loading={index === 0 ? "eager" : "lazy"} />
-          <span>0{index + 1}</span>
-          {index === 0 && <figcaption><Clapperboard size={18} /> {t("Премьера в замке · Нейфен")}</figcaption>}
-        </div>
-      ))}
+    <figure className="author-case-visual" data-reveal aria-label={t("Гости смотрят свадебный мультфильм на премьере")}>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+        poster={assetUrl("/img/wedding-premiere-guests.webp")}
+      >
+        <source src={assetUrl("/video/wedding-premiere-guests.mp4")} type="video/mp4" />
+      </video>
+      <figcaption><Clapperboard size={18} /> {t("Премьера в замке · Нейфен")}</figcaption>
     </figure>
   );
 }
