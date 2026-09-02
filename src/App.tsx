@@ -825,15 +825,34 @@ function Trust() {
 type IdeaDraft = { id: number; occasion: string; story: string };
 
 const ideaChoices = {
-  occasion: ["Свадьба", "День рождения", "Годовщина", "Для компании"],
-  mood: ["Трогательно", "Романтично", "С юмором", "Эпично"],
-  world: ["Наша реальность", "Сказка", "Сквозь эпохи", "Другая планета"],
+  occasion: ["Свадьба", "День рождения", "Годовщина", "Помолвка", "Родителям", "Новый год", "Для компании"],
+  mood: ["Трогательно", "Романтично", "С юмором", "Эпично", "Ностальгично", "Волшебно"],
+  world: ["Наша реальность", "Сказка", "Сквозь эпохи", "Другая планета", "Большой город", "Морское приключение"],
 } as const;
 
 type IdeaChoice = {
   occasion: (typeof ideaChoices.occasion)[number];
   mood: (typeof ideaChoices.mood)[number];
   world: (typeof ideaChoices.world)[number];
+};
+
+const ideaOccasionVisuals: Record<IdeaChoice["occasion"], string> = {
+  "Свадьба": "/img/services/wedding.webp",
+  "День рождения": "/img/services/birthday.webp",
+  "Годовщина": "/img/services/parents.webp",
+  "Помолвка": "/img/services/engagement.webp",
+  "Родителям": "/img/services/parents.webp",
+  "Новый год": "/img/services/new-year.webp",
+  "Для компании": "/img/services/company.webp",
+};
+
+const ideaWorldVisuals: Record<IdeaChoice["world"], string> = {
+  "Наша реальность": "/img/services/wedding.webp",
+  "Сказка": "/img/frames/04.webp",
+  "Сквозь эпохи": "/img/frames/03.webp",
+  "Другая планета": "/img/idea-planet.webp",
+  "Большой город": "/img/frames/06.webp",
+  "Морское приключение": "/img/frames/02.webp",
 };
 
 function Idea({ onComplete }: { onComplete: (draft: IdeaDraft) => void }) {
@@ -866,11 +885,18 @@ function Idea({ onComplete }: { onComplete: (draft: IdeaDraft) => void }) {
 
         <div className="idea-builder" data-reveal>
           <div className="idea-controls">
+            <div className="idea-combinations" aria-label={t("252 варианта для старта")}>
+              <b>252</b>
+              <span>{t("варианта для старта")}</span>
+            </div>
             <fieldset>
               <legend><span>01</span>{t("Повод")}</legend>
               <div>
                 {ideaChoices.occasion.map((item) => (
-                  <button type="button" className={choice.occasion === item ? "active" : ""} aria-pressed={choice.occasion === item} key={item} onClick={() => setChoice((current) => ({ ...current, occasion: item }))}>{t(item)}</button>
+                  <button type="button" className={`idea-visual-choice ${choice.occasion === item ? "active" : ""}`} aria-pressed={choice.occasion === item} key={item} onClick={() => setChoice((current) => ({ ...current, occasion: item }))}>
+                    <img src={assetUrl(ideaOccasionVisuals[item])} alt="" aria-hidden="true" />
+                    <span>{t(item)}</span>
+                  </button>
                 ))}
               </div>
             </fieldset>
@@ -886,7 +912,10 @@ function Idea({ onComplete }: { onComplete: (draft: IdeaDraft) => void }) {
               <legend><span>03</span>{t("Мир истории")}</legend>
               <div>
                 {ideaChoices.world.map((item) => (
-                  <button type="button" className={choice.world === item ? "active" : ""} aria-pressed={choice.world === item} key={item} onClick={() => setChoice((current) => ({ ...current, world: item }))}>{t(item)}</button>
+                  <button type="button" className={`idea-visual-choice ${choice.world === item ? "active" : ""}`} aria-pressed={choice.world === item} key={item} onClick={() => setChoice((current) => ({ ...current, world: item }))}>
+                    <img src={assetUrl(ideaWorldVisuals[item])} alt="" aria-hidden="true" />
+                    <span>{t(item)}</span>
+                  </button>
                 ))}
               </div>
             </fieldset>
@@ -895,7 +924,7 @@ function Idea({ onComplete }: { onComplete: (draft: IdeaDraft) => void }) {
           <div className="idea-assembly">
             <div className="idea-formula" key={assemblyKey} aria-live="polite">
               <div className="idea-ingredient ingredient-occasion">
-                <TicketCheck />
+                <img src={assetUrl(ideaOccasionVisuals[choice.occasion])} alt="" aria-hidden="true" />
                 <span>{t("Повод")}</span>
                 <b>{t(choice.occasion)}</b>
               </div>
@@ -905,7 +934,7 @@ function Idea({ onComplete }: { onComplete: (draft: IdeaDraft) => void }) {
                 <b>{t(choice.mood)}</b>
               </div>
               <div className="idea-ingredient ingredient-world">
-                <ImageIcon />
+                <img src={assetUrl(ideaWorldVisuals[choice.world])} alt="" aria-hidden="true" />
                 <span>{t("Мир истории")}</span>
                 <b>{t(choice.world)}</b>
               </div>
@@ -915,9 +944,13 @@ function Idea({ onComplete }: { onComplete: (draft: IdeaDraft) => void }) {
                 <path d="M160 310 C245 310 285 250 385 240" />
               </svg>
               <div className="idea-core">
-                <div><Lightbulb /></div>
-                <span>{t("Ваша идея собрана")}</span>
-                <b>{t("Осталось превратить её в фильм")}</b>
+                <img className="idea-core-image" src={assetUrl(ideaWorldVisuals[choice.world])} alt={t(choice.world)} />
+                <div className="idea-core-shade" aria-hidden="true" />
+                <div className="idea-core-content">
+                  <div className="idea-core-icon"><Lightbulb /></div>
+                  <span>{t("Ваша идея собрана")}</span>
+                  <b>{t("Осталось превратить её в фильм")}</b>
+                </div>
               </div>
               <i className="idea-spark spark-one" aria-hidden="true" />
               <i className="idea-spark spark-two" aria-hidden="true" />

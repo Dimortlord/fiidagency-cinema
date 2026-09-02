@@ -2610,11 +2610,32 @@ h3 {
 .idea-controls {
   display: grid;
   align-content: center;
-  gap: 27px;
+  gap: 24px;
   padding: clamp(24px, 3vw, 40px);
   border: 1px solid rgba(255, 247, 236, 0.1);
   border-radius: 22px;
   background: rgba(10, 5, 22, 0.32);
+}
+
+.idea-combinations {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  padding: 8px 13px 8px 10px;
+  border: 1px solid rgba(255, 176, 58, 0.26);
+  border-radius: 999px;
+  background: rgba(255, 176, 58, 0.07);
+  color: rgba(255, 247, 236, 0.58);
+  font-size: 0.6rem;
+  letter-spacing: 0.02em;
+}
+
+.idea-combinations b {
+  color: var(--amber);
+  font-family: var(--display);
+  font-size: 1.05rem;
+  line-height: 1;
 }
 
 .idea-controls fieldset {
@@ -2670,10 +2691,33 @@ h3 {
   box-shadow: 0 8px 26px rgba(255, 176, 58, 0.2);
 }
 
+.idea-controls button.idea-visual-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 5px;
+}
+
+.idea-visual-choice img {
+  width: 34px;
+  height: 26px;
+  border: 1px solid rgba(255, 247, 236, 0.2);
+  border-radius: 999px;
+  object-fit: cover;
+  opacity: 0.72;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.idea-visual-choice:hover img,
+.idea-visual-choice.active img {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
 .idea-assembly {
   display: flex;
   min-width: 0;
-  min-height: 492px;
+  min-height: 558px;
   flex-direction: column;
   justify-content: center;
   padding: 18px clamp(14px, 2vw, 28px) 22px;
@@ -2682,7 +2726,7 @@ h3 {
 .idea-formula {
   position: relative;
   width: 100%;
-  min-height: 390px;
+  min-height: 432px;
 }
 
 .idea-connections {
@@ -2733,6 +2777,15 @@ h3 {
   grid-row: span 2;
 }
 
+.idea-ingredient > img {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 247, 236, 0.2);
+  border-radius: 9px;
+  object-fit: cover;
+  grid-row: span 2;
+}
+
 .idea-ingredient span {
   color: rgba(255, 247, 236, 0.5);
   font-size: 0.58rem;
@@ -2753,24 +2806,49 @@ h3 {
 .idea-core {
   right: 2%;
   bottom: 4px;
-  display: grid;
-  width: min(38%, 230px);
-  min-width: 195px;
-  min-height: 164px;
-  align-content: center;
-  padding: 22px;
+  width: min(42%, 260px);
+  min-width: 220px;
+  min-height: 192px;
+  overflow: hidden;
   border-color: rgba(255, 176, 58, 0.5);
   border-radius: 26px;
-  background: radial-gradient(circle at 28% 20%, rgba(255, 176, 58, 0.24), rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0.02));
+  background: rgba(21, 11, 43, 0.9);
   box-shadow: 0 0 60px rgba(255, 176, 58, 0.15), 0 24px 60px rgba(8, 4, 19, 0.34);
   animation: idea-core-in 700ms cubic-bezier(0.16, 1, 0.3, 1) 260ms both;
 }
 
-.idea-core > div {
+.idea-core-image,
+.idea-core-shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.idea-core-image {
+  object-fit: cover;
+  animation: idea-poster-in 850ms ease both;
+}
+
+.idea-core-shade {
+  background: linear-gradient(180deg, rgba(13, 7, 28, 0.05), rgba(13, 7, 28, 0.42) 42%, rgba(13, 7, 28, 0.94));
+}
+
+.idea-core-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 192px;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+}
+
+.idea-core .idea-core-icon {
   display: grid;
-  width: 42px;
-  height: 42px;
-  margin-bottom: 18px;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 12px;
   place-items: center;
   border-radius: 50%;
   background: var(--amber);
@@ -2778,7 +2856,7 @@ h3 {
   box-shadow: 0 0 30px rgba(255, 176, 58, 0.48);
 }
 
-.idea-core > div svg { width: 21px; }
+.idea-core .idea-core-icon svg { width: 19px; }
 
 .idea-core span {
   margin-bottom: 5px;
@@ -2832,6 +2910,11 @@ h3 {
   0% { opacity: 0; filter: blur(12px); transform: scale(0.72); }
   65% { opacity: 1; filter: blur(0); transform: scale(1.04); }
   100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes idea-poster-in {
+  from { filter: blur(8px); transform: scale(1.08); }
+  to { filter: blur(0); transform: scale(1); }
 }
 
 @keyframes idea-line-in {
@@ -3452,14 +3535,17 @@ h3 {
   .idea-builder { margin-right: -8px; margin-left: -8px; padding: 8px; border-radius: 24px; }
   .idea-controls { gap: 24px; padding: 22px 18px; border-radius: 18px; }
   .idea-controls button { padding: 9px 12px; font-size: 0.68rem; }
-  .idea-assembly { min-height: 470px; padding: 10px 8px 20px; }
-  .idea-formula { min-height: 380px; }
+  .idea-controls button.idea-visual-choice { padding: 5px 10px 5px 5px; }
+  .idea-visual-choice img { width: 32px; height: 25px; }
+  .idea-assembly { min-height: 500px; padding: 10px 8px 20px; }
+  .idea-formula { min-height: 410px; }
   .idea-ingredient { width: calc(50% - 7px); min-width: 0; min-height: 100px; padding: 13px; }
   .ingredient-occasion { top: 8px; left: 0; }
   .ingredient-mood { top: 8px; right: 0; }
   .ingredient-world { bottom: 18px; left: 0; }
-  .idea-core { right: 0; bottom: 6px; width: calc(50% - 7px); min-width: 0; min-height: 146px; padding: 17px; border-radius: 20px; }
-  .idea-core > div { width: 36px; height: 36px; margin-bottom: 12px; }
+  .idea-core { right: 0; bottom: 6px; width: calc(50% - 7px); min-width: 0; min-height: 166px; border-radius: 20px; }
+  .idea-core-content { min-height: 166px; padding: 14px; }
+  .idea-core .idea-core-icon { width: 34px; height: 34px; margin-bottom: 10px; }
   .idea-connections { display: none; }
   .idea-submit { width: 100%; }
   .faq-list h3 button { grid-template-columns: 34px 1fr 24px; padding: 21px 0; }
