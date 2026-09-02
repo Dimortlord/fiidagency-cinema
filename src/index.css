@@ -2699,11 +2699,13 @@ h3 {
 }
 
 .idea-visual-choice img {
-  width: 40px;
-  height: 30px;
+  width: 46px;
+  height: auto;
+  aspect-ratio: 16 / 9;
   border: 1px solid rgba(255, 247, 236, 0.2);
-  border-radius: 999px;
-  object-fit: cover;
+  border-radius: 7px;
+  background: rgba(10, 5, 22, 0.38);
+  object-fit: contain;
   opacity: 0.72;
   transition: opacity 200ms ease, transform 200ms ease;
 }
@@ -2778,12 +2780,19 @@ h3 {
 }
 
 .idea-ingredient > img {
-  width: 42px;
-  height: 42px;
+  width: 52px;
+  height: auto;
+  aspect-ratio: 16 / 9;
   border: 1px solid rgba(255, 247, 236, 0.2);
-  border-radius: 11px;
-  object-fit: cover;
+  border-radius: 8px;
+  background: rgba(10, 5, 22, 0.38);
+  object-fit: contain;
   grid-row: span 2;
+}
+
+.ingredient-occasion,
+.ingredient-world {
+  grid-template-columns: 52px 1fr;
 }
 
 .idea-ingredient span {
@@ -3536,11 +3545,13 @@ h3 {
   .idea-controls { gap: 24px; padding: 22px 18px; border-radius: 18px; }
   .idea-controls button { padding: 9px 12px; font-size: 0.68rem; }
   .idea-controls button.idea-visual-choice { padding: 5px 10px 5px 5px; }
-  .idea-visual-choice img { width: 36px; height: 28px; }
+  .idea-visual-choice img { width: 42px; height: auto; }
   .idea-assembly { min-height: 500px; padding: 10px 8px 20px; }
   .idea-formula { min-height: 410px; }
   .idea-ingredient { width: calc(50% - 7px); min-width: 0; min-height: 100px; padding: 13px; }
-  .idea-ingredient > img { width: 38px; height: 38px; }
+  .idea-ingredient > img { width: 48px; height: auto; }
+  .ingredient-occasion,
+  .ingredient-world { grid-template-columns: 48px 1fr; }
   .ingredient-occasion { top: 8px; left: 0; }
   .ingredient-mood { top: 8px; right: 0; }
   .ingredient-world { bottom: 18px; left: 0; }
