@@ -45,6 +45,22 @@ const localeRoot = `${baseUrl}${localePrefix(locale)}`;
 const pageUrl = (path: string) => `${localeRoot}${path.replace(/^\/+/, "")}`;
 const languageUrl = (nextLocale: Locale) => `${baseUrl}${localePrefix(nextLocale)}`;
 
+function TelegramIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20.7 3.4 2.9 10.3c-1.2.5-1.2 1.1-.2 1.4l4.6 1.4 1.8 5.5c.2.7.1.9.8.9.5 0 .8-.3 1-.5l2.2-2.1 4.5 3.3c.8.5 1.4.3 1.6-.8l3-14.2c.3-1.4-.5-2-1.5-1.6ZM9 12.8l9-5.7c.4-.3.8-.1.5.2l-7.4 6.8-.3 3.1L9 12.8Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+function WhatsAppIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 2a9.8 9.8 0 0 0-8.5 14.8L2 22l5.3-1.4A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3.1.8.8-3-.2-.4A8.1 8.1 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-1.4-.5-2.6-1.5-3.3-2.8-.2-.3 0-.4.1-.5l.4-.5.2-.4c.1-.2 0-.4 0-.5l-.8-1.9c-.2-.5-.5-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.8.8-1.2 1.8-1.1 2.8 0 1.7 1.2 3.4 1.4 3.6.2.2 2.4 3.7 5.9 5.1.8.4 1.5.6 2 .7.8.3 1.6.2 2.2.1.7-.1 1.5-.7 1.7-1.4.2-.7.2-1.3.1-1.4-.1-.2-.3-.2-.5-.3Z" fill="currentColor" />
+    </svg>
+  );
+}
+
 const navItems = [
   ["История", "story"],
   ["Услуги", "formats"],
@@ -296,8 +312,10 @@ function scrollToId(id: string) {
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
+  const [contactsOpen, setContactsOpen] = useState(false);
   const [attached, setAttached] = useState(() => window.scrollY > 28);
   const languageRef = useRef<HTMLDivElement>(null);
+  const contactsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setAttached(window.scrollY > 28);
@@ -307,12 +325,16 @@ function Header() {
   }, []);
 
   useEffect(() => {
-    if (!languageOpen) return;
+    if (!languageOpen && !contactsOpen) return;
     const closeOnOutsideClick = (event: PointerEvent) => {
       if (!languageRef.current?.contains(event.target as Node)) setLanguageOpen(false);
+      if (!contactsRef.current?.contains(event.target as Node)) setContactsOpen(false);
     };
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setLanguageOpen(false);
+      if (event.key === "Escape") {
+        setLanguageOpen(false);
+        setContactsOpen(false);
+      }
     };
     document.addEventListener("pointerdown", closeOnOutsideClick);
     document.addEventListener("keydown", closeOnEscape);
@@ -320,7 +342,7 @@ function Header() {
       document.removeEventListener("pointerdown", closeOnOutsideClick);
       document.removeEventListener("keydown", closeOnEscape);
     };
-  }, [languageOpen]);
+  }, [languageOpen, contactsOpen]);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
@@ -335,6 +357,7 @@ function Header() {
   const navigate = (id: string) => {
     setMenuOpen(false);
     setLanguageOpen(false);
+    setContactsOpen(false);
     window.setTimeout(() => scrollToId(id), 60);
   };
 
@@ -354,6 +377,41 @@ function Header() {
           </nav>
 
           <div className="header-actions">
+            <div className={`header-contacts ${contactsOpen ? "is-open" : ""}`} ref={contactsRef}>
+              <a
+                className="header-contact-icon is-telegram"
+                href={CONTACTS.telegram}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Telegram ${CONTACTS.telegramHandle}`}
+              >
+                <TelegramIcon />
+              </a>
+              <button
+                className="header-contact-icon is-whatsapp"
+                type="button"
+                aria-label={t("Выбрать номер WhatsApp")}
+                aria-haspopup="menu"
+                aria-expanded={contactsOpen}
+                aria-controls="whatsapp-menu"
+                onClick={() => {
+                  setContactsOpen((open) => !open);
+                  setLanguageOpen(false);
+                  setMenuOpen(false);
+                }}
+              >
+                <WhatsAppIcon />
+              </button>
+              <div id="whatsapp-menu" className="header-whatsapp-menu" role="menu">
+                <small>WhatsApp</small>
+                <a href={CONTACTS.whatsapp.de} target="_blank" rel="noreferrer" role="menuitem">
+                  <b>DE</b><span>{CONTACTS.phoneDe}</span><ArrowRight />
+                </a>
+                <a href={CONTACTS.whatsapp.ua} target="_blank" rel="noreferrer" role="menuitem">
+                  <b>UA</b><span>{CONTACTS.phoneUa}</span><ArrowRight />
+                </a>
+              </div>
+            </div>
             <div className={`nav-language ${languageOpen ? "is-open" : ""}`} ref={languageRef}>
               <button
                 className="nav-language-trigger"
@@ -364,6 +422,7 @@ function Header() {
                 aria-controls="language-menu"
                 onClick={() => {
                   setLanguageOpen((open) => !open);
+                  setContactsOpen(false);
                   setMenuOpen(false);
                 }}
               >
@@ -395,6 +454,7 @@ function Header() {
               onClick={() => {
                 setMenuOpen((open) => !open);
                 setLanguageOpen(false);
+                setContactsOpen(false);
               }}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
@@ -846,13 +906,17 @@ function Works({ showcaseRef, videoRef }: {
   );
 }
 
-function FilmPlayer() {
+function AuthorCaseVisual() {
+  const caseFrames = [galleryFrames[0], galleryFrames[5], galleryFrames[7]];
   return (
-    <figure className="first-film" data-reveal>
-      <video controls playsInline preload="metadata" poster={assetUrl("/img/frames/01.webp")} aria-label={t("Полный свадебный мультфильм")}>
-        <source src={assetUrl("/video/full-wedding-film.mp4")} type="video/mp4" />
-      </video>
-      <figcaption><span /> {t("Полный фильм · 07:28 · Премьера в замке")}</figcaption>
+    <figure className="author-case-visual" data-reveal aria-label={t("Кадры первого свадебного фильма")}>
+      {caseFrames.map((frame, index) => (
+        <div className={`author-case-frame frame-${index + 1}`} key={frame.src}>
+          <img src={frame.src} alt={t(frame.alt)} loading={index === 0 ? "eager" : "lazy"} />
+          <span>0{index + 1}</span>
+        </div>
+      ))}
+      <figcaption><Clapperboard size={18} /> {t("Премьера в замке · Нейфен")}</figcaption>
     </figure>
   );
 }
@@ -861,17 +925,18 @@ function Trust() {
   return (
     <section id="trust" className="trust paper-section" aria-labelledby="trust-title">
       <div className="container trust-grid">
-        <FilmPlayer />
+        <AuthorCaseVisual />
         <div className="trust-copy" data-reveal>
-          <p className="section-kicker">{t("Сцена 07 · Личное доказательство")}</p>
-          <h2 id="trust-title">{t("Мой фильм — мой главный отзыв")}</h2>
-          <p>{t("Около 40 часов я собирал этот фильм для нашей свадьбы, продумывая каждую сцену и каждую деталь.")}</p>
-          <p>{t("Премьера была на дорогой свадьбе в замке в Нейфене — перед всеми гостями. Права на ошибку не было: всё должно было сработать с первого кадра.")}</p>
-          <p>{t("Теперь каждый фильм для клиентов я делаю с тем же вниманием и качеством, как если бы снова делал его для себя.")}</p>
+          <p className="section-kicker">{t("Сцена 07 · Первый кейс")}</p>
+          <h2 id="trust-title">{t("Сначала я сделал это для себя")}</h2>
+          <p>{t("Я не начинал с обещаний клиентам. Сначала я сделал фильм для собственной свадьбы — около 40 часов собирал сцены, музыку и переходы между эпохами.")}</p>
+          <p>{t("Премьера проходила в замке в Нейфене перед всеми гостями. Права на ошибку не было: фильм должен был сработать с первого кадра.")}</p>
+          <p>{t("Этот проект стал моей планкой качества. Теперь каждый фильм для клиентов я создаю с тем же вниманием, как если бы снова делал его для себя.")}</p>
+          <blockquote>{t("Зал замолчал. А фильм мы включили ещё раз в ту же ночь.")}</blockquote>
           <div className="trust-proof" aria-label={t("Три факта о первом фильме")}>
             <span><b>≈ 40</b>{t("часов работы")}</span>
-            <span><b>{t("Замок")}</b>{t("премьера в Нейфене")}</span>
-            <span><b>{t("Как для себя")}</b>{t("так делаю для вас")}</span>
+            <span><b>7</b>{t("эпох")}</span>
+            <span><b>100+</b>{t("кадров")}</span>
           </div>
           <div className="trust-actions">
             <button className="button button-primary" onClick={() => scrollToId("contact")}>{t("Хочу фильм с таким подходом")} <ArrowRight size={19} /></button>
@@ -1091,8 +1156,9 @@ function Contact({ ideaDraft }: { ideaDraft: IdeaDraft | null }) {
           <h2 id="contact-title">{t("Расскажите, чей это будет фильм")}</h2>
           <p>{t("Напишите повод и дату. Я отвечу сегодня, задам несколько вопросов и сразу скажу, какой формат подойдёт.")}</p>
           <div className="messenger-list">
-            {CONTACTS.whatsapp && <a href={CONTACTS.whatsapp}><MessageCircle /><span><b>WhatsApp</b>{t("Обычно отвечаю быстрее всего")}</span><ArrowRight /></a>}
-            {CONTACTS.telegram && <a href={CONTACTS.telegram}><Send /><span><b>Telegram</b>{t("Можно голосовым сообщением")}</span><ArrowRight /></a>}
+            <a href={CONTACTS.whatsapp.de} target="_blank" rel="noreferrer"><MessageCircle /><span><b>WhatsApp · DE</b>{CONTACTS.phoneDe}</span><ArrowRight /></a>
+            <a href={CONTACTS.whatsapp.ua} target="_blank" rel="noreferrer"><MessageCircle /><span><b>WhatsApp · UA</b>{CONTACTS.phoneUa}</span><ArrowRight /></a>
+            <a href={CONTACTS.telegram} target="_blank" rel="noreferrer"><Send /><span><b>Telegram</b>{CONTACTS.telegramHandle}</span><ArrowRight /></a>
             {CONTACTS.email && <a href={`mailto:${CONTACTS.email}`}><Mail /><span><b>E-mail</b>{CONTACTS.email}</span><ArrowRight /></a>}
           </div>
           {CONTACTS.city && <div className="contact-location"><MapPin /> {t(CONTACTS.city)} · {t("дистанционно по всей Европе")}</div>}
@@ -1146,14 +1212,6 @@ function Contact({ ideaDraft }: { ideaDraft: IdeaDraft | null }) {
   );
 }
 
-const footerPeople = [
-  [assetUrl("/img/people/dmitriy.webp"), "Дмитрий"],
-  [assetUrl("/img/people/vanessa.webp"), "Ванесса"],
-  [assetUrl("/img/people/egypt.webp"), "Герои Египта"],
-  [assetUrl("/img/people/knight.webp"), "Герои турнира"],
-  [assetUrl("/img/people/future.webp"), "Герои будущего"],
-] as const;
-
 function Footer() {
   return (
     <footer className="footer night-section">
@@ -1165,21 +1223,33 @@ function Footer() {
           </div>
           <div className="footer-links">
             <div><span>{t("Сцены")}</span>{navItems.slice(0, 4).map(([label, id]) => <button key={id} onClick={() => scrollToId(id)}>{t(label)}</button>)}</div>
-            <div><span>{t("Связь")}</span>{CONTACTS.whatsapp && <a href={CONTACTS.whatsapp}>WhatsApp</a>}{CONTACTS.telegram && <a href={CONTACTS.telegram}>Telegram</a>}{CONTACTS.email && <a href={`mailto:${CONTACTS.email}`}>E-mail</a>}</div>
+            <div><span>{t("Связь")}</span><a href={CONTACTS.whatsapp.de} target="_blank" rel="noreferrer">WhatsApp · DE</a><a href={CONTACTS.whatsapp.ua} target="_blank" rel="noreferrer">WhatsApp · UA</a><a href={CONTACTS.telegram} target="_blank" rel="noreferrer">Telegram</a>{CONTACTS.email && <a href={`mailto:${CONTACTS.email}`}>E-mail</a>}</div>
             <div><span>{t("Документы")}</span><a href={pageUrl("/impressum")}>Impressum</a><a href={pageUrl("/datenschutz")}>Datenschutz</a><div className="footer-languages">{locales.map((item) => <a key={item} className={item === locale ? "active" : ""} href={languageUrl(item)} lang={item} hrefLang={item} aria-current={item === locale ? "page" : undefined}>{languageLabels[item]}</a>)}</div></div>
           </div>
         </div>
 
-        <div className="footer-cast" aria-label={t("Герои наших историй")}>
-          {footerPeople.map(([src, alt], index) => (
-            <div className={`cast-member cast-${index + 1}`} key={src}>
-              <img src={src} alt={t(alt)} width="120" height="120" loading="lazy" />
-              <span aria-hidden="true">👋</span>
+        <div className="footer-reel-heading">
+          <p>{t("До встречи")}<br />{t("на премьере")}</p>
+          <span>{t("Ваш фильм может стать следующим кадром")}</span>
+        </div>
+      </div>
+
+      <div className="footer-reel" aria-label={t("Кинолента наших историй")}>
+        <div className="footer-reel-track">
+          {[0, 1].map((group) => (
+            <div className="footer-reel-group" aria-hidden={group === 1} key={group}>
+              {galleryFrames.map((frame, index) => (
+                <figure key={`${group}-${frame.src}`}>
+                  <img src={frame.src} alt={group === 0 ? t(frame.alt) : ""} width="320" height="180" loading="lazy" />
+                  <figcaption>0{index + 1}</figcaption>
+                </figure>
+              ))}
             </div>
           ))}
-          <p>{t("До встречи")}<br />{t("на премьере")}</p>
         </div>
+      </div>
 
+      <div className="container">
         <div className="footer-bottom">
           <span>© 2026 FIID Cinema · {t("Ульм, Германия")}</span>
           <span>{t("Сайт собран с вниманием в")} <a href="https://fiidagency.com" target="_blank" rel="noreferrer">fiidagency.com</a></span>
