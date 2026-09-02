@@ -2694,13 +2694,13 @@ h3 {
 .idea-controls button.idea-visual-choice {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   padding: 5px 12px 5px 5px;
 }
 
 .idea-visual-choice img {
-  width: 34px;
-  height: 26px;
+  width: 40px;
+  height: 30px;
   border: 1px solid rgba(255, 247, 236, 0.2);
   border-radius: 999px;
   object-fit: cover;
@@ -2778,10 +2778,10 @@ h3 {
 }
 
 .idea-ingredient > img {
-  width: 34px;
-  height: 34px;
+  width: 42px;
+  height: 42px;
   border: 1px solid rgba(255, 247, 236, 0.2);
-  border-radius: 9px;
+  border-radius: 11px;
   object-fit: cover;
   grid-row: span 2;
 }
@@ -3536,10 +3536,11 @@ h3 {
   .idea-controls { gap: 24px; padding: 22px 18px; border-radius: 18px; }
   .idea-controls button { padding: 9px 12px; font-size: 0.68rem; }
   .idea-controls button.idea-visual-choice { padding: 5px 10px 5px 5px; }
-  .idea-visual-choice img { width: 32px; height: 25px; }
+  .idea-visual-choice img { width: 36px; height: 28px; }
   .idea-assembly { min-height: 500px; padding: 10px 8px 20px; }
   .idea-formula { min-height: 410px; }
   .idea-ingredient { width: calc(50% - 7px); min-width: 0; min-height: 100px; padding: 13px; }
+  .idea-ingredient > img { width: 38px; height: 38px; }
   .ingredient-occasion { top: 8px; left: 0; }
   .ingredient-mood { top: 8px; right: 0; }
   .ingredient-world { bottom: 18px; left: 0; }
