@@ -109,6 +109,33 @@ const formats = [
   },
 ];
 
+const runtimeExamples = [
+  {
+    duration: "00:20",
+    kind: "Короткая открытка",
+    title: "Один яркий момент",
+    description: "Быстрая эмоция для поздравления, приглашения или сторис.",
+    video: "/video/runtime-short.mp4",
+    poster: "/img/runtime-short.webp",
+  },
+  {
+    duration: "01:15",
+    kind: "Мини-фильм",
+    title: "История с развитием",
+    description: "Несколько сцен, узнаваемые герои и маленький законченный сюжет.",
+    video: "/video/runtime-story.mp4",
+    poster: "/img/runtime-story.webp",
+  },
+  {
+    duration: "07:28",
+    kind: "Большой фильм",
+    title: "Премьера для большого экрана",
+    description: "Полная история с эпохами, музыкой и моментом, который запомнит весь зал.",
+    video: "/video/full-wedding-film.mp4",
+    poster: "/img/frames/01.webp",
+  },
+] as const;
+
 const occasions = [
   "Свадьба",
   "Помолвка",
@@ -547,7 +574,13 @@ function Story() {
 
 function Formats() {
   const [selectedService, setSelectedService] = useState(0);
+  const runtimePlayers = useRef<Array<HTMLVideoElement | null>>([]);
   const service = serviceStories[selectedService];
+  const playRuntimeExample = (current: HTMLVideoElement) => {
+    runtimePlayers.current.forEach((player) => {
+      if (player && player !== current) player.pause();
+    });
+  };
   return (
     <section id="formats" className="formats paper-section" aria-labelledby="formats-title">
       <div className="container">
@@ -608,6 +641,33 @@ function Formats() {
           <span>{t("Следующий шаг")}</span>
           <h3>{t("Выберите хронометраж")}</h3>
           <p>{t("Любую из историй выше можно сделать короткой открыткой или полноценным фильмом.")}</p>
+        </div>
+
+        <div className="runtime-gallery" aria-label={t("Примеры фильмов разной продолжительности")} data-reveal>
+          {runtimeExamples.map((example, index) => (
+            <article className="runtime-card" key={example.duration}>
+              <div className="runtime-media">
+                <video
+                  ref={(player) => { runtimePlayers.current[index] = player; }}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  poster={assetUrl(example.poster)}
+                  aria-label={`${t(example.kind)} · ${example.duration}`}
+                  onPlay={(event) => playRuntimeExample(event.currentTarget)}
+                >
+                  <source src={assetUrl(example.video)} type="video/mp4" />
+                </video>
+                <span className="runtime-index">{String(index + 1).padStart(2, "0")}</span>
+                <span className="runtime-duration">{example.duration}</span>
+              </div>
+              <div className="runtime-copy">
+                <small>{t(example.kind)}</small>
+                <h4>{t(example.title)}</h4>
+                <p>{t(example.description)}</p>
+              </div>
+            </article>
+          ))}
         </div>
 
         <div className="price-grid">
